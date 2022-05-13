@@ -40,9 +40,9 @@ const LineNumber = ({ sign, number, onClick }: LineNumberProps) => {
         "text-slate-500",
         "shrink-0",
         {
-          "bg-red-100": sign === "-",
-          "bg-green-100": sign === "+",
-          "bg-gray-100": sign === null,
+          "bg-red-100 hover:bg-red-200": sign === "-",
+          "bg-green-100 hover:bg-green-100": sign === "+",
+          "bg-gray-100 hover:bg-gray-200": sign === null,
           "cursor-pointer": Boolean(onClick),
         }
       )}
