@@ -64,8 +64,6 @@ export default async function handler(
     convertMarkdown(readible),
   ]);
 
-  console.log(origin, readible);
-
   res.status(200).json({ origin, readible });
   //TODO: sentry에서 에러를 catch 할 수 있도록 에러 처리
 }

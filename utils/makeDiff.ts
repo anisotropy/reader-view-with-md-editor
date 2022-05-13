@@ -46,7 +46,7 @@ const splitValue = (change: DiffChange | null, length: number) => {
   const sentences: (string | null)[] = [];
   const temp = change?.value.split("\n").slice(0, change?.count) || [];
   for (let i = 0; i < length; i++) {
-    sentences.push(temp[i] || null);
+    sentences.push(temp[i] === undefined ? null : temp[i]);
   }
   return sentences;
 };
@@ -86,10 +86,24 @@ const extractLastNumbers = (lines: Lines) => {
 };
 
 const makeChars = (
-  leftentence: string | null,
+  leftSentence: string | null,
   rightSentence: string | null
 ) => {
-  const changes = diffChars(leftentence || "", rightSentence || "");
+  if (leftSentence === null && rightSentence !== null) {
+    return {
+      leftChars: [],
+      rightChars: [{ added: true, value: rightSentence }],
+    };
+  } else if (leftSentence !== null && rightSentence === null) {
+    return {
+      leftChars: [{ removed: true, value: leftSentence }],
+      rightChars: [],
+    };
+  } else if (leftSentence === null && rightSentence === null) {
+    return { leftChars: [], rightChars: [] };
+  }
+
+  const changes = diffChars(leftSentence || "", rightSentence || "");
   const leftChars: DiffChange[] = [];
   const rightChars: DiffChange[] = [];
   changes.forEach((change) => {
