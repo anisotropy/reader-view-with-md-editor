@@ -1,6 +1,7 @@
 import { Article } from "./HomePage";
 import makeDiff, { addSentece, Char, DividedLine, Sign } from "utils/makeDiff";
 import classnames from "classnames";
+import { Fragment } from "react";
 
 type DiffCharProps = { chars: Char[] };
 
@@ -118,15 +119,10 @@ const DiffChecker = ({ article, onChangeArticle }: DiffCheckerProps) => {
   return (
     <div role="table" className="text-sm leading-relaxed font-mono">
       {diff.map((dividedLine, i) => (
-        <>
-          <DiffRow
-            key={`l${i}`}
-            dividedLine={dividedLine}
-            which="left"
-            onAdd={onAdd}
-          />
-          <DiffRow key={`r${i}`} dividedLine={dividedLine} which="right" />
-        </>
+        <Fragment key={i}>
+          <DiffRow dividedLine={dividedLine} which="left" onAdd={onAdd} />
+          <DiffRow dividedLine={dividedLine} which="right" />
+        </Fragment>
       ))}
     </div>
   );
