@@ -1,3 +1,4 @@
+import ReactDiffViewer from "react-diff-viewer";
 import { Article } from "./HomePage";
 import makeDiff, { Char, DividedLine, Sign } from "utils/makeDiff";
 import classnames from "classnames";
@@ -57,10 +58,10 @@ const DiffRow = ({ dividedLine, which }: DiffRowProps) => {
       })}
     >
       <span role="cell" className={lineNumberClassName}>
-        {dividedLine.left.number}
+        {line.sign !== "+" && dividedLine.left.number}
       </span>
       <span role="cell" className={lineNumberClassName}>
-        {dividedLine.right.number}
+        {line.sign !== "-" && dividedLine.right.number}
       </span>
       <span role="cell" className="w-8 text-center">
         {line.sign}
@@ -111,6 +112,11 @@ const DiffChecker = ({ article }: DiffCheckerProps) => {
           </>
         ))}
       </div>
+      <ReactDiffViewer
+        oldValue={article.origin}
+        newValue={article.readible}
+        splitView={false}
+      />
     </>
   );
 };
