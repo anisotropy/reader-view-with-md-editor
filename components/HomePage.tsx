@@ -8,10 +8,10 @@ const Home = () => {
   const [article, setArticle] = useState<Article>({ origin: "", readible: "" });
 
   return (
-    <>
+    <div className="text-slate-700">
       <InputUrl setArticle={setArticle} />
       <DiffChecker article={article} />
-    </>
+    </div>
   );
 };
 

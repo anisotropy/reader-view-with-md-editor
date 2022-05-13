@@ -1,13 +1,19 @@
 import { diffLines, diffChars, Change as DiffChange } from "diff";
 
-type Line = {
+export type Char = DiffChange;
+
+export type Sign = "+" | "-" | null;
+
+export type Line = {
   number: number | null;
   prevNumber: number | null;
-  sign: "+" | "-" | null;
+  sign: Sign;
   chars: DiffChange[];
 };
 
-export type Lines = { left: Line; right: Line }[];
+export type DividedLine = { left: Line; right: Line };
+
+export type Lines = DividedLine[];
 
 const divideChanges = (changes: DiffChange[]) => {
   const left: (DiffChange | null)[] = [];
