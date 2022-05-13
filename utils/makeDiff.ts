@@ -166,11 +166,39 @@ const groupsToLines = (
   return lines;
 };
 
+const preprocess = (str: string) => {
+  return str.trim() + "\n";
+};
+
 const makeDiff = (origin: string, readible: string) => {
-  const changes = diffLines(origin, readible);
+  const changes = diffLines(preprocess(origin), preprocess(readible));
   const { left, right } = divideChanges(changes);
   const lines = groupsToLines(left, right);
   return lines;
+};
+
+export const addSentece = (
+  diff: Lines,
+  sentenceToAdd: string,
+  lineNumber: number
+) => {
+  let newSentence = "";
+  let isAdded = false;
+  diff.forEach((dividedLine) => {
+    const { right } = dividedLine;
+    if (right.number && lineNumber === right.number - 1) {
+      newSentence += sentenceToAdd + "\n";
+      isAdded = true;
+    }
+    if (right.sentence !== null) {
+      newSentence += right.sentence + "\n";
+    }
+  });
+  if (!isAdded) {
+    newSentence += sentenceToAdd + "\n";
+  }
+
+  return newSentence;
 };
 
 export default makeDiff;

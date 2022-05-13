@@ -1,5 +1,5 @@
 import { Article } from "./HomePage";
-import makeDiff, { Char, DividedLine, Sign } from "utils/makeDiff";
+import makeDiff, { addSentece, Char, DividedLine, Sign } from "utils/makeDiff";
 import classnames from "classnames";
 
 type DiffCharProps = { chars: Char[] };
@@ -104,22 +104,15 @@ type DiffCheckerProps = {
 };
 
 const DiffChecker = ({ article, onChangeArticle }: DiffCheckerProps) => {
+  if (!article.origin && !article.readible) return null;
+
   const diff = makeDiff(article.origin, article.readible);
 
-  const onAdd = ({ right: theRight, left: theLeft }: DividedLine) => {
-    console.log(theLeft.sentence);
-    const sentences: string[] = [];
-    const number = theRight.number || theRight.prevNumber || 0;
-    diff.forEach((dividedLine) => {
-      const { right } = dividedLine;
-      if (right.number && number === right.number - 1) {
-        if (theLeft.sentence !== null) sentences.push(theLeft.sentence);
-      }
-      if (right.sentence !== null) {
-        sentences.push(right.sentence);
-      }
-    });
-    onChangeArticle(sentences.join("\n"));
+  const onAdd = ({ left, right }: DividedLine) => {
+    if (left.sentence === null) return;
+    const number = right.number || right.prevNumber || 0;
+    const newSentece = addSentece(diff, left.sentence, number);
+    onChangeArticle(newSentece);
   };
 
   return (
