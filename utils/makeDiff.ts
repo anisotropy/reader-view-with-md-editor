@@ -173,23 +173,4 @@ const makeDiff = (origin: string, readible: string) => {
   return lines;
 };
 
-export const diffToString = (lines: Lines): { left: string; right: string } => {
-  return lines.reduce(
-    (result, line) => {
-      if (line.left.sentence !== null) {
-        result.left +=
-          result.left === "" ? line.left.sentence : `\n${line.left.sentence}`;
-      }
-      if (line.right.sentence !== null) {
-        result.right +=
-          result.right === ""
-            ? line.right.sentence
-            : `\n${line.right.sentence}`;
-      }
-      return result;
-    },
-    { left: "", right: "" }
-  );
-};
-
 export default makeDiff;

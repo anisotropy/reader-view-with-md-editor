@@ -22,9 +22,13 @@ const DiffChars = ({ chars }: DiffCharProps) => {
   );
 };
 
-type LineNumberProps = { sign: Sign; number: number | null };
+type LineNumberProps = {
+  sign: Sign;
+  number: number | null;
+  onClick?: () => void;
+};
 
-const LineNumber = ({ sign, number }: LineNumberProps) => {
+const LineNumber = ({ sign, number, onClick }: LineNumberProps) => {
   return (
     <div
       role="cell"
@@ -38,17 +42,23 @@ const LineNumber = ({ sign, number }: LineNumberProps) => {
           "bg-red-100": sign === "-",
           "bg-green-100": sign === "+",
           "bg-gray-100": sign === null,
+          "cursor-pointer": Boolean(onClick),
         }
       )}
+      onClick={onClick}
     >
       {sign !== "+" && number}
     </div>
   );
 };
 
-type DiffRowProps = { dividedLine: DividedLine; which: keyof DividedLine };
+type DiffRowProps = {
+  dividedLine: DividedLine;
+  which: keyof DividedLine;
+  onAdd?: (dividedLine: DividedLine) => void;
+};
 
-const DiffRow = ({ dividedLine, which }: DiffRowProps) => {
+const DiffRow = ({ dividedLine, which, onAdd }: DiffRowProps) => {
   const line = dividedLine[which];
 
   if (which === "left" && (line.chars.length === 0 || line.sign !== "-")) {
@@ -59,6 +69,12 @@ const DiffRow = ({ dividedLine, which }: DiffRowProps) => {
     return null;
   }
 
+  const onClickNumber = onAdd
+    ? () => {
+        onAdd(dividedLine);
+      }
+    : undefined;
+
   return (
     <div
       role="row"
@@ -68,7 +84,11 @@ const DiffRow = ({ dividedLine, which }: DiffRowProps) => {
         "bg-green-50": line.sign === "+",
       })}
     >
-      <LineNumber sign={line.sign} number={dividedLine.left.number} />
+      <LineNumber
+        sign={line.sign}
+        number={dividedLine.left.number}
+        onClick={onClickNumber}
+      />
       <LineNumber sign={line.sign} number={dividedLine.right.number} />
       <div role="cell" className="w-8 text-center shrink-0">
         {line.sign}
@@ -78,16 +98,40 @@ const DiffRow = ({ dividedLine, which }: DiffRowProps) => {
   );
 };
 
-type DiffCheckerProps = { article: Article };
+type DiffCheckerProps = {
+  article: Article;
+  onChangeArticle: (readibleArticle: string) => void;
+};
 
-const DiffChecker = ({ article }: DiffCheckerProps) => {
+const DiffChecker = ({ article, onChangeArticle }: DiffCheckerProps) => {
   const diff = makeDiff(article.origin, article.readible);
+
+  const onAdd = ({ right: theRight, left: theLeft }: DividedLine) => {
+    console.log(theLeft.sentence);
+    const sentences: string[] = [];
+    const number = theRight.number || theRight.prevNumber || 0;
+    diff.forEach((dividedLine) => {
+      const { right } = dividedLine;
+      if (right.number && number === right.number - 1) {
+        if (theLeft.sentence !== null) sentences.push(theLeft.sentence);
+      }
+      if (right.sentence !== null) {
+        sentences.push(right.sentence);
+      }
+    });
+    onChangeArticle(sentences.join("\n"));
+  };
 
   return (
     <div role="table" className="text-sm leading-relaxed font-mono">
       {diff.map((dividedLine, i) => (
         <>
-          <DiffRow key={`l${i}`} dividedLine={dividedLine} which="left" />
+          <DiffRow
+            key={`l${i}`}
+            dividedLine={dividedLine}
+            which="left"
+            onAdd={onAdd}
+          />
           <DiffRow key={`r${i}`} dividedLine={dividedLine} which="right" />
         </>
       ))}
