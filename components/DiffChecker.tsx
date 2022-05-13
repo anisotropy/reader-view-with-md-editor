@@ -1,6 +1,6 @@
 import ReactDiffViewer from "react-diff-viewer";
 import { Article } from "./HomePage";
-import makeDiff, { Char, DividedLine, Sign } from "utils/makeDiff";
+import makeDiff, { Char, DividedLine, Line, Sign } from "utils/makeDiff";
 import classnames from "classnames";
 
 type DiffCharProps = { chars: Char[] };
@@ -23,6 +23,23 @@ const DiffChars = ({ chars }: DiffCharProps) => {
   );
 };
 
+type LineNumberProps = { sign: Sign; number: number | null };
+
+const LineNumber = ({ sign, number }: LineNumberProps) => {
+  return (
+    <span
+      role="cell"
+      className={classnames("w-10", "text-right", "pr-1.5", "text-slate-500", {
+        "bg-red-100": sign === "-",
+        "bg-green-100": sign === "+",
+        "bg-gray-100": sign === null,
+      })}
+    >
+      {sign !== "+" && number}
+    </span>
+  );
+};
+
 type DiffRowProps = { dividedLine: DividedLine; which: keyof DividedLine };
 
 const DiffRow = ({ dividedLine, which }: DiffRowProps) => {
@@ -36,18 +53,6 @@ const DiffRow = ({ dividedLine, which }: DiffRowProps) => {
     return null;
   }
 
-  const lineNumberClassName = classnames(
-    "w-10",
-    "text-right",
-    "pr-1.5",
-    "text-slate-500",
-    {
-      "bg-red-100": line.sign === "-",
-      "bg-green-100": line.sign === "+",
-      "bg-gray-100": line.sign === null,
-    }
-  );
-
   return (
     <pre
       role="row"
@@ -57,16 +62,11 @@ const DiffRow = ({ dividedLine, which }: DiffRowProps) => {
         "bg-green-50": line.sign === "+",
       })}
     >
-      <span role="cell" className={lineNumberClassName}>
-        {line.sign !== "+" && dividedLine.left.number}
-      </span>
-      <span role="cell" className={lineNumberClassName}>
-        {line.sign !== "-" && dividedLine.right.number}
-      </span>
+      <LineNumber sign={line.sign} number={dividedLine.left.number} />
+      <LineNumber sign={line.sign} number={dividedLine.right.number} />
       <span role="cell" className="w-8 text-center">
         {line.sign}
       </span>
-
       <DiffChars chars={line.chars} />
     </pre>
   );
@@ -75,31 +75,6 @@ const DiffRow = ({ dividedLine, which }: DiffRowProps) => {
 type DiffCheckerProps = { article: Article };
 
 const DiffChecker = ({ article }: DiffCheckerProps) => {
-  // article.origin = `
-  //   zbb
-  //   aaa
-  //   aaa
-  // `;
-  // article.readible = `
-  //   zzz
-  //   aaa
-  //   aaa
-  // `;
-
-  article.origin = `
-       zbb
-    kkk
-    ddd
-    aaa
-    ttt
-  `;
-  article.readible = `
-    zzz
-    aaa
-    ttt
-    jjj
-  `;
-
   const diff = makeDiff(article.origin, article.readible);
 
   return (
