@@ -1,12 +1,17 @@
-import type { NextPage } from "next";
+import { useState } from "react";
+import DiffChecker from "./DiffChecker";
+import InputUrl from "./InputUrl";
 
-const Home: NextPage = () => {
+export type Article = { origin: string; readible: string };
+
+const Home = () => {
+  const [article, setArticle] = useState<Article>({ origin: "", readible: "" });
+
   return (
-    <div className="flex items-center">
-      <div className="inline-flex p-6 mx-auto shadow-lg rounded-tl-lg rounded-tr-lg rounded-bl-lg rounded-br-lg bg-amber-500 text-white">
-        TailwindCSS
-      </div>
-    </div>
+    <>
+      <InputUrl setArticle={setArticle} />
+      <DiffChecker article={article} />
+    </>
   );
 };
 
