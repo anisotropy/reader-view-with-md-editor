@@ -1,13 +1,12 @@
-import ReactDiffViewer from "react-diff-viewer";
 import { Article } from "./HomePage";
-import makeDiff, { Char, DividedLine, Line, Sign } from "utils/makeDiff";
+import makeDiff, { Char, DividedLine, Sign } from "utils/makeDiff";
 import classnames from "classnames";
 
 type DiffCharProps = { chars: Char[] };
 
 const DiffChars = ({ chars }: DiffCharProps) => {
   return (
-    <span role="cell" className="flex">
+    <div role="cell" className="grow whitespace-pre-wrap">
       {chars.map((char, i) => (
         <span
           key={i}
@@ -19,7 +18,7 @@ const DiffChars = ({ chars }: DiffCharProps) => {
           {char.value}
         </span>
       ))}
-    </span>
+    </div>
   );
 };
 
@@ -27,16 +26,23 @@ type LineNumberProps = { sign: Sign; number: number | null };
 
 const LineNumber = ({ sign, number }: LineNumberProps) => {
   return (
-    <span
+    <div
       role="cell"
-      className={classnames("w-10", "text-right", "pr-1.5", "text-slate-500", {
-        "bg-red-100": sign === "-",
-        "bg-green-100": sign === "+",
-        "bg-gray-100": sign === null,
-      })}
+      className={classnames(
+        "w-10",
+        "text-right",
+        "pr-1.5",
+        "text-slate-500",
+        "shrink-0",
+        {
+          "bg-red-100": sign === "-",
+          "bg-green-100": sign === "+",
+          "bg-gray-100": sign === null,
+        }
+      )}
     >
       {sign !== "+" && number}
-    </span>
+    </div>
   );
 };
 
@@ -54,7 +60,7 @@ const DiffRow = ({ dividedLine, which }: DiffRowProps) => {
   }
 
   return (
-    <pre
+    <div
       role="row"
       className={classnames({
         flex: true,
@@ -64,11 +70,11 @@ const DiffRow = ({ dividedLine, which }: DiffRowProps) => {
     >
       <LineNumber sign={line.sign} number={dividedLine.left.number} />
       <LineNumber sign={line.sign} number={dividedLine.right.number} />
-      <span role="cell" className="w-8 text-center">
+      <div role="cell" className="w-8 text-center shrink-0">
         {line.sign}
-      </span>
+      </div>
       <DiffChars chars={line.chars} />
-    </pre>
+    </div>
   );
 };
 
@@ -78,21 +84,14 @@ const DiffChecker = ({ article }: DiffCheckerProps) => {
   const diff = makeDiff(article.origin, article.readible);
 
   return (
-    <>
-      <div role="table" className="text-sm leading-relaxed">
-        {diff.map((dividedLine, i) => (
-          <>
-            <DiffRow key={`l${i}`} dividedLine={dividedLine} which="left" />
-            <DiffRow key={`r${i}`} dividedLine={dividedLine} which="right" />
-          </>
-        ))}
-      </div>
-      <ReactDiffViewer
-        oldValue={article.origin}
-        newValue={article.readible}
-        splitView={false}
-      />
-    </>
+    <div role="table" className="text-sm leading-relaxed font-mono">
+      {diff.map((dividedLine, i) => (
+        <>
+          <DiffRow key={`l${i}`} dividedLine={dividedLine} which="left" />
+          <DiffRow key={`r${i}`} dividedLine={dividedLine} which="right" />
+        </>
+      ))}
+    </div>
   );
 };
 

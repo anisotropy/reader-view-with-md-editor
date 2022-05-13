@@ -9,6 +9,7 @@ export type Line = {
   prevNumber: number | null;
   sign: Sign;
   chars: DiffChange[];
+  sentence: string | null;
 };
 
 export type DividedLine = { left: Line; right: Line };
@@ -53,7 +54,8 @@ const splitValue = (change: DiffChange | null, length: number) => {
 const makeLine = (
   diffChange: DiffChange | null,
   lineNumber: number,
-  chars: DiffChange[]
+  chars: DiffChange[],
+  sentence: string | null
 ): Line => {
   const { removed, added } = diffChange || {};
   const newLineNumber = chars.length ? lineNumber + 1 : lineNumber;
@@ -63,6 +65,7 @@ const makeLine = (
     prevNumber: chars.length ? null : lineNumber,
     sign: chars.length ? (removed ? "-" : added ? "+" : null) : null,
     chars,
+    sentence,
   };
 };
 
@@ -122,8 +125,13 @@ const appendLlines = (
       leftSentences[i],
       rightSentences[i]
     );
-    const leftLine = makeLine(left, leftNumber, leftChars);
-    const rightLine = makeLine(right, rightNumber, rightChars);
+    const leftLine = makeLine(left, leftNumber, leftChars, leftSentences[i]);
+    const rightLine = makeLine(
+      right,
+      rightNumber,
+      rightChars,
+      rightSentences[i]
+    );
     leftNumber = leftLine.number || leftLine.prevNumber || leftNumber;
     rightNumber = rightLine.number || rightLine.prevNumber || rightNumber;
     lines.push({ left: leftLine, right: rightLine });
@@ -149,6 +157,25 @@ const makeDiff = (origin: string, readible: string) => {
   const { left, right } = divideChanges(changes);
   const lines = groupsToLines(left, right);
   return lines;
+};
+
+export const diffToString = (lines: Lines): { left: string; right: string } => {
+  return lines.reduce(
+    (result, line) => {
+      if (line.left.sentence !== null) {
+        result.left +=
+          result.left === "" ? line.left.sentence : `\n${line.left.sentence}`;
+      }
+      if (line.right.sentence !== null) {
+        result.right +=
+          result.right === ""
+            ? line.right.sentence
+            : `\n${line.right.sentence}`;
+      }
+      return result;
+    },
+    { left: "", right: "" }
+  );
 };
 
 export default makeDiff;

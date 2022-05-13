@@ -7,6 +7,8 @@ export type Article = { origin: string; readible: string };
 const Home = () => {
   const [article, setArticle] = useState<Article>({ origin: "", readible: "" });
 
+  const onAdd = (newStentence: string, position: number) => {};
+
   return (
     <div className="text-slate-700">
       <InputUrl setArticle={setArticle} />
