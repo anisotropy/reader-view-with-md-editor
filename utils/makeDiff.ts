@@ -244,13 +244,26 @@ const add = (diff: Lines, sentenceToAdd: string, lineNumber: number) => {
   return newSentence;
 };
 
+const remove = (diff: Lines, lineNumber: number) => {
+  return diff.reduce((newSentence, { right }) => {
+    if (lineNumber !== right.number && right.sentence !== null) {
+      newSentence += right.sentence + "\n";
+    }
+    return newSentence;
+  }, "");
+};
+
 export const addSentence = (diff: Lines, line: SingleLine) => {
   if (line.sentence === null) {
     throw new Error(`'line.sentece' can NOT be 'null'`);
   }
-  const number = line.rightNumber;
-  const newSentece = add(diff, line.sentence, number);
-  return newSentece;
+  const newSentence = add(diff, line.sentence, line.rightNumber);
+  return newSentence;
+};
+
+export const removeSentence = (diff: Lines, line: SingleLine) => {
+  const newSentence = remove(diff, line.rightNumber);
+  return newSentence;
 };
 
 export default makeDiff;

@@ -1,5 +1,6 @@
 import makeDiff, {
   addSentence,
+  removeSentence,
   Char,
   diffWithoutSplit,
   Sign,
@@ -60,11 +61,13 @@ const LineNumber = ({ sign, number, onClick }: LineNumberProps) => {
 type DiffRowProps = {
   line: SingleLine;
   onAdd: (line: SingleLine) => void;
+  onRemove: (line: SingleLine) => void;
 };
 
-const DiffRow = ({ line, onAdd }: DiffRowProps) => {
+const DiffRow = ({ line, onAdd, onRemove }: DiffRowProps) => {
   const onClickNumber = () => {
     if (line.sign === "-") onAdd(line);
+    if (line.sign === "+") onRemove(line);
   };
 
   return (
@@ -111,10 +114,15 @@ const DiffChecker = ({ oldDoc, newDoc, onChangeArticle }: DiffCheckerProps) => {
     onChangeArticle(newSentece);
   };
 
+  const onRemove = (line: SingleLine) => {
+    const newSentece = removeSentence(diff, line);
+    onChangeArticle(newSentece);
+  };
+
   return (
     <div role="table" className="text-sm leading-relaxed font-mono">
       {lines.map((line, i) => (
-        <DiffRow key={i} line={line} onAdd={onAdd} />
+        <DiffRow key={i} line={line} onAdd={onAdd} onRemove={onRemove} />
       ))}
     </div>
   );
