@@ -1,6 +1,5 @@
-import { Article } from "./HomePage";
 import makeDiff, {
-  addSentece,
+  addSentence,
   Char,
   diffWithoutSplit,
   Sign,
@@ -99,9 +98,7 @@ const DiffChecker = ({ oldDoc, newDoc, onChangeArticle }: DiffCheckerProps) => {
   const lines = diffWithoutSplit(diff);
 
   const onAdd = (line: SingleLine) => {
-    if (line.sentence === null) return;
-    const number = line.rightNumber || line.rightPrevNumber;
-    const newSentece = addSentece(diff, line.sentence, number);
+    const newSentece = addSentence(diff, line);
     onChangeArticle(newSentece);
   };
 

@@ -220,11 +220,7 @@ export const diffWithoutSplit = (lines: Lines) => {
   return newLines;
 };
 
-export const addSentece = (
-  diff: Lines,
-  sentenceToAdd: string,
-  lineNumber: number
-) => {
+const add = (diff: Lines, sentenceToAdd: string, lineNumber: number) => {
   let newSentence = "";
   let isAdded = false;
   diff.forEach((dividedLine) => {
@@ -242,6 +238,15 @@ export const addSentece = (
   }
 
   return newSentence;
+};
+
+export const addSentence = (diff: Lines, line: SingleLine) => {
+  if (line.sentence === null) {
+    throw new Error(`'line.sentece' can NOT be 'null'`);
+  }
+  const number = line.rightNumber || line.rightPrevNumber;
+  const newSentece = add(diff, line.sentence, number);
+  return newSentece;
 };
 
 export default makeDiff;
