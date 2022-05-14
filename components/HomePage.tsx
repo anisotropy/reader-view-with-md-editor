@@ -6,7 +6,10 @@ import InputUrl from "./InputUrl";
 export type Article = { origin: string; readible: string };
 
 const Home = () => {
-  const [article, setArticle] = useState<Article>({ origin: "", readible: "" });
+  const [article, setArticle] = useState<Article>({
+    origin: "ccc\naaa",
+    readible: "aaa\nbbb",
+  });
 
   const onWebClip = async (url: string) => {
     const { data } = await axios.get(`/api/web-clip?url=${encodeURI(url)}`);

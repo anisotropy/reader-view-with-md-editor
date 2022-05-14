@@ -1,7 +1,12 @@
 import { Article } from "./HomePage";
-import makeDiff, { addSentece, Char, DividedLine, Sign } from "utils/makeDiff";
+import makeDiff, {
+  addSentece,
+  Char,
+  diffWithoutSplit,
+  Sign,
+  SingleLine,
+} from "utils/makeDiff";
 import classnames from "classnames";
-import { Fragment } from "react";
 
 type DiffCharProps = { chars: Char[] };
 
@@ -26,10 +31,9 @@ const DiffChars = ({ chars }: DiffCharProps) => {
 type LineNumberProps = {
   sign: Sign;
   number: number | null;
-  onClick?: () => void;
 };
 
-const LineNumber = ({ sign, number, onClick }: LineNumberProps) => {
+const LineNumber = ({ sign, number }: LineNumberProps) => {
   return (
     <div
       role="cell"
@@ -39,42 +43,28 @@ const LineNumber = ({ sign, number, onClick }: LineNumberProps) => {
         "pr-1.5",
         "text-slate-500",
         "shrink-0",
+        "cursor-pointer",
         {
           "bg-red-100 hover:bg-red-200": sign === "-",
-          "bg-green-100 hover:bg-green-100": sign === "+",
+          "bg-green-100 hover:bg-green-200": sign === "+",
           "bg-gray-100 hover:bg-gray-200": sign === null,
-          "cursor-pointer": Boolean(onClick),
         }
       )}
-      onClick={onClick}
     >
-      {sign !== "+" && number}
+      {number}
     </div>
   );
 };
 
 type DiffRowProps = {
-  dividedLine: DividedLine;
-  which: keyof DividedLine;
-  onAdd?: (dividedLine: DividedLine) => void;
+  line: SingleLine;
+  onAdd: (line: SingleLine) => void;
 };
 
-const DiffRow = ({ dividedLine, which, onAdd }: DiffRowProps) => {
-  const line = dividedLine[which];
-
-  if (which === "left" && (line.chars.length === 0 || line.sign !== "-")) {
-    return null;
-  }
-
-  if (which === "right" && line.chars.length === 0) {
-    return null;
-  }
-
-  const onClickNumber = onAdd
-    ? () => {
-        onAdd(dividedLine);
-      }
-    : undefined;
+const DiffRow = ({ line, onAdd }: DiffRowProps) => {
+  const onClick = () => {
+    if (line.sign === "-") onAdd(line);
+  };
 
   return (
     <div
@@ -84,13 +74,10 @@ const DiffRow = ({ dividedLine, which, onAdd }: DiffRowProps) => {
         "bg-red-50": line.sign === "-",
         "bg-green-50": line.sign === "+",
       })}
+      onClick={onClick}
     >
-      <LineNumber
-        sign={line.sign}
-        number={dividedLine.left.number}
-        onClick={onClickNumber}
-      />
-      <LineNumber sign={line.sign} number={dividedLine.right.number} />
+      <LineNumber sign={line.sign} number={line.leftNumber} />
+      <LineNumber sign={line.sign} number={line.rightNumber} />
       <div role="cell" className="w-8 text-center shrink-0">
         {line.sign}
       </div>
@@ -108,21 +95,19 @@ const DiffChecker = ({ article, onChangeArticle }: DiffCheckerProps) => {
   if (!article.origin && !article.readible) return null;
 
   const diff = makeDiff(article.origin, article.readible);
+  const lines = diffWithoutSplit(diff);
 
-  const onAdd = ({ left, right }: DividedLine) => {
-    if (left.sentence === null) return;
-    const number = right.number || right.prevNumber || 0;
-    const newSentece = addSentece(diff, left.sentence, number);
+  const onAdd = (line: SingleLine) => {
+    if (line.sentence === null) return;
+    const number = line.rightNumber || line.rightPrevNumber;
+    const newSentece = addSentece(diff, line.sentence, number);
     onChangeArticle(newSentece);
   };
 
   return (
     <div role="table" className="text-sm leading-relaxed font-mono">
-      {diff.map((dividedLine, i) => (
-        <Fragment key={i}>
-          <DiffRow dividedLine={dividedLine} which="left" onAdd={onAdd} />
-          <DiffRow dividedLine={dividedLine} which="right" />
-        </Fragment>
+      {lines.map((line, i) => (
+        <DiffRow key={i} line={line} onAdd={onAdd} />
       ))}
     </div>
   );

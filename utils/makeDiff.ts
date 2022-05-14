@@ -6,7 +6,17 @@ export type Sign = "+" | "-" | null;
 
 export type Line = {
   number: number | null;
-  prevNumber: number | null;
+  prevNumber: number;
+  sign: Sign;
+  chars: DiffChange[];
+  sentence: string | null;
+};
+
+export type SingleLine = {
+  leftNumber: number | null;
+  leftPrevNumber: number;
+  rightNumber: number | null;
+  rightPrevNumber: number;
   sign: Sign;
   chars: DiffChange[];
   sentence: string | null;
@@ -62,7 +72,7 @@ const makeLine = (
   const number = chars.length ? newLineNumber : null;
   return {
     number,
-    prevNumber: chars.length ? null : lineNumber,
+    prevNumber: lineNumber,
     sign: chars.length ? (removed ? "-" : added ? "+" : null) : null,
     chars,
     sentence,
@@ -73,14 +83,12 @@ const extractLastNumbers = (lines: Lines) => {
   const leftNumber =
     lines.length > 0
       ? lines[lines.length - 1].left.number ||
-        lines[lines.length - 1].left.prevNumber ||
-        0
+        lines[lines.length - 1].left.prevNumber
       : 0;
   const rightNumber =
     lines.length > 0
       ? lines[lines.length - 1].right.number ||
-        lines[lines.length - 1].right.prevNumber ||
-        0
+        lines[lines.length - 1].right.prevNumber
       : 0;
   return { leftNumber, rightNumber };
 };
@@ -123,7 +131,7 @@ const makeChars = (
   return { leftChars, rightChars };
 };
 
-const appendLlines = (
+const appendLines = (
   globalLines: Lines,
   left: DiffChange | null,
   right: DiffChange | null
@@ -146,8 +154,8 @@ const appendLlines = (
       rightChars,
       rightSentences[i]
     );
-    leftNumber = leftLine.number || leftLine.prevNumber || leftNumber;
-    rightNumber = rightLine.number || rightLine.prevNumber || rightNumber;
+    leftNumber = leftLine.number || leftLine.prevNumber;
+    rightNumber = rightLine.number || rightLine.prevNumber;
     lines.push({ left: leftLine, right: rightLine });
   }
 
@@ -161,7 +169,7 @@ const groupsToLines = (
   const length = Math.max(left.length, right.length);
   let lines: Lines = [];
   for (let i = 0; i < length; i++) {
-    lines = appendLlines(lines, left[i] || null, right[i] || null);
+    lines = appendLines(lines, left[i] || null, right[i] || null);
   }
   return lines;
 };
@@ -175,6 +183,41 @@ const makeDiff = (origin: string, readible: string) => {
   const { left, right } = divideChanges(changes);
   const lines = groupsToLines(left, right);
   return lines;
+};
+
+export const diffWithoutSplit = (lines: Lines) => {
+  const newLines: SingleLine[] = [];
+  lines.forEach(({ left, right }) => {
+    const numbers = {
+      leftNumber: left.number,
+      leftPrevNumber: left.prevNumber,
+      rightNumber: right.number,
+      rightPrevNumber: right.prevNumber,
+    };
+
+    if (left.sign === null || right.sign === null) {
+      newLines.push({
+        ...numbers,
+        sign: left.sign || right.sign,
+        chars: left.sign !== null ? left.chars : right.chars,
+        sentence: left.sign !== null ? left.sentence : right.sentence,
+      });
+    } else {
+      newLines.push({
+        ...numbers,
+        sign: left.sign,
+        chars: left.chars,
+        sentence: left.sentence,
+      });
+      newLines.push({
+        ...numbers,
+        sign: right.sign,
+        chars: right.chars,
+        sentence: right.sentence,
+      });
+    }
+  });
+  return newLines;
 };
 
 export const addSentece = (
