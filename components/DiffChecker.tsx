@@ -87,14 +87,15 @@ const DiffRow = ({ line, onAdd }: DiffRowProps) => {
 };
 
 type DiffCheckerProps = {
-  article: Article;
+  oldDoc: string;
+  newDoc: string;
   onChangeArticle: (readibleArticle: string) => void;
 };
 
-const DiffChecker = ({ article, onChangeArticle }: DiffCheckerProps) => {
-  if (!article.origin && !article.readible) return null;
+const DiffChecker = ({ oldDoc, newDoc, onChangeArticle }: DiffCheckerProps) => {
+  if (!oldDoc && !newDoc) return null;
 
-  const diff = makeDiff(article.origin, article.readible);
+  const diff = makeDiff(oldDoc, newDoc);
   const lines = diffWithoutSplit(diff);
 
   const onAdd = (line: SingleLine) => {

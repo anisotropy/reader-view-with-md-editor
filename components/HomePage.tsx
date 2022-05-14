@@ -23,7 +23,11 @@ const Home = () => {
   return (
     <div className="text-slate-700">
       <InputUrl onChangeUrl={onWebClip} />
-      <DiffChecker article={article} onChangeArticle={onChangeArticle} />
+      <DiffChecker
+        oldDoc={article.origin}
+        newDoc={article.readible}
+        onChangeArticle={onChangeArticle}
+      />
     </div>
   );
 };

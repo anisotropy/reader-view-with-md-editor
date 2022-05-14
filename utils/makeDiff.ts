@@ -178,8 +178,8 @@ const preprocess = (str: string) => {
   return str.trim() + "\n";
 };
 
-const makeDiff = (origin: string, readible: string) => {
-  const changes = diffLines(preprocess(origin), preprocess(readible));
+const makeDiff = (oldDoc: string, newDoc: string) => {
+  const changes = diffLines(preprocess(oldDoc), preprocess(newDoc));
   const { left, right } = divideChanges(changes);
   const lines = groupsToLines(left, right);
   return lines;
