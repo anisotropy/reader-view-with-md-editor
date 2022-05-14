@@ -7,8 +7,8 @@ export type Article = { origin: string; readible: string };
 
 const Home = () => {
   const [article, setArticle] = useState<Article>({
-    origin: "ccc\naaa",
-    readible: "aaa\nbbb",
+    origin: "kkk\nccc\naaa",
+    readible: "kkz\naaa\nbbb",
   });
 
   const onWebClip = async (url: string) => {

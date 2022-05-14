@@ -30,9 +30,10 @@ const DiffChars = ({ chars }: DiffCharProps) => {
 type LineNumberProps = {
   sign: Sign;
   number: number | null;
+  show: boolean;
 };
 
-const LineNumber = ({ sign, number }: LineNumberProps) => {
+const LineNumber = ({ sign, number, show }: LineNumberProps) => {
   return (
     <div
       role="cell"
@@ -50,7 +51,7 @@ const LineNumber = ({ sign, number }: LineNumberProps) => {
         }
       )}
     >
-      {number}
+      {show && number}
     </div>
   );
 };
@@ -75,8 +76,16 @@ const DiffRow = ({ line, onAdd }: DiffRowProps) => {
       })}
       onClick={onClick}
     >
-      <LineNumber sign={line.sign} number={line.leftNumber} />
-      <LineNumber sign={line.sign} number={line.rightNumber} />
+      <LineNumber
+        sign={line.sign}
+        number={line.leftNumber}
+        show={line.showLeftNumber}
+      />
+      <LineNumber
+        sign={line.sign}
+        number={line.rightNumber}
+        show={line.showRightNumber}
+      />
       <div role="cell" className="w-8 text-center shrink-0">
         {line.sign}
       </div>

@@ -13,10 +13,10 @@ export type Line = {
 };
 
 export type SingleLine = {
-  leftNumber: number | null;
-  leftPrevNumber: number;
-  rightNumber: number | null;
-  rightPrevNumber: number;
+  leftNumber: number;
+  rightNumber: number;
+  showLeftNumber: boolean;
+  showRightNumber: boolean;
   sign: Sign;
   chars: DiffChange[];
   sentence: string | null;
@@ -100,11 +100,11 @@ const makeChars = (
   if (leftSentence === null && rightSentence !== null) {
     return {
       leftChars: [],
-      rightChars: [{ added: true, value: rightSentence }],
+      rightChars: [{ value: rightSentence }],
     };
   } else if (leftSentence !== null && rightSentence === null) {
     return {
-      leftChars: [{ removed: true, value: leftSentence }],
+      leftChars: [{ value: leftSentence }],
       rightChars: [],
     };
   } else if (leftSentence === null && rightSentence === null) {
@@ -189,15 +189,15 @@ export const diffWithoutSplit = (lines: Lines) => {
   const newLines: SingleLine[] = [];
   lines.forEach(({ left, right }) => {
     const numbers = {
-      leftNumber: left.number,
-      leftPrevNumber: left.prevNumber,
-      rightNumber: right.number,
-      rightPrevNumber: right.prevNumber,
+      leftNumber: left.number || left.prevNumber,
+      rightNumber: right.number || right.prevNumber,
     };
 
     if (left.sign === null || right.sign === null) {
       newLines.push({
         ...numbers,
+        showLeftNumber: left.number !== null,
+        showRightNumber: right.number !== null,
         sign: left.sign || right.sign,
         chars: left.sign !== null ? left.chars : right.chars,
         sentence: left.sign !== null ? left.sentence : right.sentence,
@@ -205,12 +205,16 @@ export const diffWithoutSplit = (lines: Lines) => {
     } else {
       newLines.push({
         ...numbers,
+        showLeftNumber: true,
+        showRightNumber: false,
         sign: left.sign,
         chars: left.chars,
         sentence: left.sentence,
       });
       newLines.push({
         ...numbers,
+        showLeftNumber: false,
+        showRightNumber: true,
         sign: right.sign,
         chars: right.chars,
         sentence: right.sentence,
@@ -244,7 +248,7 @@ export const addSentence = (diff: Lines, line: SingleLine) => {
   if (line.sentence === null) {
     throw new Error(`'line.sentece' can NOT be 'null'`);
   }
-  const number = line.rightNumber || line.rightPrevNumber;
+  const number = line.rightNumber;
   const newSentece = add(diff, line.sentence, number);
   return newSentece;
 };
