@@ -19,7 +19,7 @@ export type SingleLine = {
   showRightNumber: boolean;
   sign: Sign;
   chars: DiffChange[];
-  sentence: string | null;
+  sentence: string;
 };
 
 export type DividedLine = { left: Line; right: Line };
@@ -200,7 +200,9 @@ export const diffWithoutSplit = (lines: Lines) => {
         showRightNumber: right.number !== null,
         sign: left.sign || right.sign,
         chars: left.sign !== null ? left.chars : right.chars,
-        sentence: left.sign !== null ? left.sentence : right.sentence,
+        sentence: (left.sign !== null
+          ? left.sentence
+          : right.sentence) as string,
       });
     } else {
       newLines.push({
@@ -209,7 +211,7 @@ export const diffWithoutSplit = (lines: Lines) => {
         showRightNumber: false,
         sign: left.sign,
         chars: left.chars,
-        sentence: left.sentence,
+        sentence: left.sentence as string,
       });
       newLines.push({
         ...numbers,
@@ -217,7 +219,7 @@ export const diffWithoutSplit = (lines: Lines) => {
         showRightNumber: true,
         sign: right.sign,
         chars: right.chars,
-        sentence: right.sentence,
+        sentence: right.sentence as string,
       });
     }
   });
@@ -225,31 +227,42 @@ export const diffWithoutSplit = (lines: Lines) => {
 };
 
 const add = (diff: Lines, sentenceToAdd: string, lineNumber: number) => {
-  let newSentence = "";
+  let newArticle = "";
   let isAdded = false;
   diff.forEach((dividedLine) => {
     const { right } = dividedLine;
     if (right.number && lineNumber === right.number - 1) {
-      newSentence += sentenceToAdd + "\n";
+      newArticle += sentenceToAdd + "\n";
       isAdded = true;
     }
     if (right.sentence !== null) {
-      newSentence += right.sentence + "\n";
+      newArticle += right.sentence + "\n";
     }
   });
   if (!isAdded) {
-    newSentence += sentenceToAdd + "\n";
+    newArticle += sentenceToAdd + "\n";
   }
 
-  return newSentence;
+  return newArticle;
 };
 
 const remove = (diff: Lines, lineNumber: number) => {
-  return diff.reduce((newSentence, { right }) => {
+  return diff.reduce((newArticle, { right }) => {
     if (lineNumber !== right.number && right.sentence !== null) {
-      newSentence += right.sentence + "\n";
+      newArticle += right.sentence + "\n";
     }
-    return newSentence;
+    return newArticle;
+  }, "");
+};
+
+const update = (diff: Lines, sentenceToUpdate: string, lineNumber: number) => {
+  return diff.reduce((newArticle, { right }) => {
+    if (lineNumber === right.number) {
+      newArticle += sentenceToUpdate + "\n";
+    } else if (right.sentence !== null) {
+      newArticle += right.sentence + "\n";
+    }
+    return newArticle;
   }, "");
 };
 
@@ -257,13 +270,21 @@ export const addSentence = (diff: Lines, line: SingleLine) => {
   if (line.sentence === null) {
     throw new Error(`'line.sentece' can NOT be 'null'`);
   }
-  const newSentence = add(diff, line.sentence, line.rightNumber);
-  return newSentence;
+  const newArticle = add(diff, line.sentence, line.rightNumber);
+  return newArticle;
 };
 
 export const removeSentence = (diff: Lines, line: SingleLine) => {
-  const newSentence = remove(diff, line.rightNumber);
-  return newSentence;
+  const newArticle = remove(diff, line.rightNumber);
+  return newArticle;
+};
+
+export const updateSentece = (
+  diff: Lines,
+  sentenceToUpdate: string,
+  lineNumber: number
+) => {
+  return update(diff, sentenceToUpdate, lineNumber);
 };
 
 export default makeDiff;

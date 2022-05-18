@@ -4,16 +4,31 @@ import makeDiff, {
   Char,
   diffWithoutSplit,
   SingleLine,
+  updateSentece,
 } from "utils/makeDiff";
 import classnames from "classnames";
+import MdEditor from "./MdEditor";
+import { useState } from "react";
 
 type DiffCharProps = {
+  isEditing: boolean;
+  sentence: string;
   chars: Char[];
   cursorPointer: boolean;
   onClick: () => void;
+  onUpdate: (markdonw: string) => void;
+  onCancel: () => void;
 };
 
-const DiffChars = ({ chars, cursorPointer, onClick }: DiffCharProps) => {
+const DiffChars = ({
+  isEditing,
+  sentence,
+  chars,
+  cursorPointer,
+  onUpdate,
+  onClick,
+  onCancel,
+}: DiffCharProps) => {
   return (
     <div
       role="cell"
@@ -22,18 +37,26 @@ const DiffChars = ({ chars, cursorPointer, onClick }: DiffCharProps) => {
       })}
       onClick={onClick}
     >
-      {chars.map((char, i) => (
-        <span
-          key={i}
-          role="cell"
-          className={classnames({
-            "bg-red-200": char.removed,
-            "bg-green-200": char.added,
-          })}
-        >
-          {char.value}
-        </span>
-      ))}
+      {isEditing ? (
+        <MdEditor
+          initialValue={sentence}
+          onUpdate={onUpdate}
+          onCancel={onCancel}
+        />
+      ) : (
+        chars.map((char, i) => (
+          <span
+            key={i}
+            role="cell"
+            className={classnames({
+              "bg-red-200": char.removed,
+              "bg-green-200": char.added,
+            })}
+          >
+            {char.value}
+          </span>
+        ))
+      )}
     </div>
   );
 };
@@ -76,12 +99,23 @@ const LineNumber = ({
 
 type DiffRowProps = {
   line: SingleLine;
+  isEditing: boolean;
   onAdd: (line: SingleLine) => void;
   onRemove: (line: SingleLine) => void;
   onEdit: (line: SingleLine) => void;
+  onUpdate: (markdown: string) => void;
+  onCancel: () => void;
 };
 
-const DiffRow = ({ line, onAdd, onRemove, onEdit }: DiffRowProps) => {
+const DiffRow = ({
+  line,
+  isEditing,
+  onAdd,
+  onRemove,
+  onEdit,
+  onUpdate,
+  onCancel,
+}: DiffRowProps) => {
   const onClickNumber = () => {
     if (line.sign === "-") onAdd(line);
     if (line.sign === "+") onRemove(line);
@@ -125,9 +159,13 @@ const DiffRow = ({ line, onAdd, onRemove, onEdit }: DiffRowProps) => {
         {line.sign}
       </div>
       <DiffChars
+        isEditing={isEditing}
+        sentence={line.sentence}
         chars={line.chars}
         cursorPointer={line.sign !== "-"}
         onClick={onClickSentence}
+        onUpdate={onUpdate}
+        onCancel={onCancel}
       />
     </div>
   );
@@ -140,37 +178,55 @@ type DiffCheckerProps = {
 };
 
 const DiffChecker = ({ oldDoc, newDoc, onChangeArticle }: DiffCheckerProps) => {
-  if (!oldDoc && !newDoc) return null;
-
+  const [numberToEdit, setNumberToEdit] = useState<number | null>(null);
   const diff = makeDiff(oldDoc, newDoc);
   const lines = diffWithoutSplit(diff);
 
   const onAdd = (line: SingleLine) => {
-    const newSentece = addSentence(diff, line);
-    onChangeArticle(newSentece);
+    const newArticle = addSentence(diff, line);
+    onChangeArticle(newArticle);
   };
 
   const onRemove = (line: SingleLine) => {
-    const newSentece = removeSentence(diff, line);
-    onChangeArticle(newSentece);
+    const newArticle = removeSentence(diff, line);
+    onChangeArticle(newArticle);
   };
 
-  const onEdit = () => {
-    console.log("onEdit");
+  const onEdit = (line: SingleLine) => {
+    setNumberToEdit(line.rightNumber);
   };
 
+  const onUpdate = (markdown: string) => {
+    if (numberToEdit === null) return;
+    const newArticle = updateSentece(diff, markdown, numberToEdit);
+    onChangeArticle(newArticle);
+    setNumberToEdit(null);
+  };
+
+  const onCancel = () => {
+    setNumberToEdit(null);
+  };
+
+  if (!oldDoc && !newDoc) return null;
   return (
-    <div role="table" className="text-sm leading-relaxed font-mono">
-      {lines.map((line, i) => (
-        <DiffRow
-          key={i}
-          line={line}
-          onAdd={onAdd}
-          onRemove={onRemove}
-          onEdit={onEdit}
-        />
-      ))}
-    </div>
+    <>
+      <div role="table" className="text-sm leading-relaxed">
+        {lines.map((line, i) => (
+          <DiffRow
+            key={i}
+            line={line}
+            isEditing={
+              line.rightNumber === numberToEdit && line.showRightNumber
+            }
+            onAdd={onAdd}
+            onRemove={onRemove}
+            onEdit={onEdit}
+            onUpdate={onUpdate}
+            onCancel={onCancel}
+          />
+        ))}
+      </div>
+    </>
   );
 };
 
