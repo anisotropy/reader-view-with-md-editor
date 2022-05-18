@@ -10,7 +10,7 @@ type MenuProps = {
 
 const Menu = ({ buttons, onAdd, onRemove, onEdit, onClose }: MenuProps) => {
   return (
-    <div className="absolute top-0 left-20 flex space-x-2 p-2 bg-white rounded border-0 drop-shadow-md">
+    <div className="flex space-x-4 my-2">
       {buttons.add && (
         <Button color="red" onClick={onAdd}>
           추가

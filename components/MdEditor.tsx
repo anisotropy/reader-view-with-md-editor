@@ -32,7 +32,7 @@ const MdEditor = ({ initialValue, onUpdate, onCancel }: MdEditorProps) => {
   );
 
   return (
-    <form className="pb-2" onSubmit={handleSubmit(onSubmit)}>
+    <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
       <textarea
         {...register("markdown", { onChange: changeMdHeight })}
         onFocus={changeMdHeight}
@@ -40,7 +40,8 @@ const MdEditor = ({ initialValue, onUpdate, onCancel }: MdEditorProps) => {
         defaultValue={initialValue}
         className="p-0 outline-none bg-transparent w-full resize-none"
       />
-      <div className="flex space-x-4">
+      <div style={{ height: "1px" }} />
+      <div className="flex space-x-4 mb-2">
         <Button submit color="blue">
           수정 완료
         </Button>

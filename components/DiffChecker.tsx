@@ -15,7 +15,6 @@ type DiffCharProps = {
   isEditing: boolean;
   sentence: string;
   chars: Char[];
-  cursorPointer?: boolean;
   onUpdate: (markdonw: string) => void;
   onCancel: () => void;
 };
@@ -24,17 +23,11 @@ const DiffChars = ({
   isEditing,
   sentence,
   chars,
-  cursorPointer,
   onUpdate,
   onCancel,
 }: DiffCharProps) => {
   return (
-    <div
-      role="cell"
-      className={classnames("grow", "whitespace-pre-wrap", {
-        "cursor-pointer": cursorPointer,
-      })}
-    >
+    <>
       {isEditing ? (
         <MdEditor
           initialValue={sentence}
@@ -55,7 +48,7 @@ const DiffChars = ({
           </span>
         ))
       )}
-    </div>
+    </>
   );
 };
 
@@ -166,24 +159,24 @@ const DiffRow = ({
         <div role="cell" className="w-8 text-center shrink-0">
           {line.sign}
         </div>
-        <DiffChars
-          isEditing={isEditing}
-          sentence={line.sentence}
-          chars={line.chars}
-          onUpdate={onClickUpdate}
-          onCancel={onCancel}
-        />
-      </div>
-      <div className="relative">
-        {showMenu && (
-          <Menu
-            buttons={menuButtons}
-            onAdd={onClickAdd}
-            onRemove={onClickRemove}
-            onEdit={onClickEdit}
-            onClose={onCloseMenu}
+        <div role="cell" className="grow whitespace-pre-wrap">
+          <DiffChars
+            isEditing={isEditing}
+            sentence={line.sentence}
+            chars={line.chars}
+            onUpdate={onClickUpdate}
+            onCancel={onCancel}
           />
-        )}
+          {showMenu && (
+            <Menu
+              buttons={menuButtons}
+              onAdd={onClickAdd}
+              onRemove={onClickRemove}
+              onEdit={onClickEdit}
+              onClose={onCloseMenu}
+            />
+          )}
+        </div>
       </div>
     </>
   );
@@ -226,7 +219,6 @@ const DiffChecker = ({ oldDoc, newDoc, onChangeArticle }: DiffCheckerProps) => {
   };
 
   const onEdit = (lineId: number) => {
-    setTheLineId(null);
     setLineIdToEdit(lineId);
   };
 
@@ -238,7 +230,6 @@ const DiffChecker = ({ oldDoc, newDoc, onChangeArticle }: DiffCheckerProps) => {
   };
 
   const onCancel = () => {
-    setTheLineId(null);
     setLineIdToEdit(null);
   };
 
@@ -250,7 +241,7 @@ const DiffChecker = ({ oldDoc, newDoc, onChangeArticle }: DiffCheckerProps) => {
           <DiffRow
             key={line.id}
             line={line}
-            showMenu={line.id === theLineId}
+            showMenu={line.id === theLineId && lineIdToEdit === null}
             isEditing={line.id === lineIdToEdit}
             onShowMenu={onShowMenu}
             onCloseMenu={onCloseMenu}
