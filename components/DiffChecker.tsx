@@ -9,13 +9,13 @@ import makeDiff, {
 import classnames from "classnames";
 import MdEditor from "./MdEditor";
 import { useState } from "react";
+import Menu from "./Menu";
 
 type DiffCharProps = {
   isEditing: boolean;
   sentence: string;
   chars: Char[];
-  cursorPointer: boolean;
-  onClick: () => void;
+  cursorPointer?: boolean;
   onUpdate: (markdonw: string) => void;
   onCancel: () => void;
 };
@@ -26,7 +26,6 @@ const DiffChars = ({
   chars,
   cursorPointer,
   onUpdate,
-  onClick,
   onCancel,
 }: DiffCharProps) => {
   return (
@@ -35,7 +34,6 @@ const DiffChars = ({
       className={classnames("grow", "whitespace-pre-wrap", {
         "cursor-pointer": cursorPointer,
       })}
-      onClick={onClick}
     >
       {isEditing ? (
         <MdEditor
@@ -99,31 +97,40 @@ const LineNumber = ({
 
 type DiffRowProps = {
   line: SingleLine;
+  showMenu: boolean;
   isEditing: boolean;
-  onAdd: (line: SingleLine) => void;
-  onRemove: (line: SingleLine) => void;
-  onEdit: (line: SingleLine) => void;
-  onUpdate: (markdown: string) => void;
+  onShowMenu: (lineId: number) => void;
+  onCloseMenu: () => void;
+  onAdd: (lineId: number) => void;
+  onRemove: (lineId: number) => void;
+  onEdit: (lineId: number) => void;
+  onUpdate: (lineId: number, markdown: string) => void;
   onCancel: () => void;
 };
 
 const DiffRow = ({
   line,
+  showMenu,
   isEditing,
+  onShowMenu,
+  onCloseMenu,
   onAdd,
   onRemove,
   onEdit,
   onUpdate,
   onCancel,
 }: DiffRowProps) => {
-  const onClickNumber = () => {
-    if (line.sign === "-") onAdd(line);
-    if (line.sign === "+") onRemove(line);
+  const menuButtons = {
+    add: line.sign === "-",
+    remove: line.sign === "+",
+    edit: line.sign !== "-",
   };
 
-  const onClickSentence = () => {
-    if (line.sign !== "-") onEdit(line);
-  };
+  const onClickAdd = () => onAdd(line.id);
+  const onClickRemove = () => onRemove(line.id);
+  const onClickEdit = () => onEdit(line.id);
+  const onClickNumber = () => onShowMenu(line.id);
+  const onClickUpdate = (markdown: string) => onUpdate(line.id, markdown);
 
   const numberProps = {
     color:
@@ -132,42 +139,53 @@ const DiffRow = ({
         : line.sign === "+"
         ? "green"
         : ("gray" as "red" | "green" | "gray"),
-    cursorPointer: line.sign !== null,
+    cursorPointer: true,
   };
 
   return (
-    <div
-      role="row"
-      className={classnames({
-        flex: true,
-        "bg-red-50 hover:bg-red-100": line.sign === "-",
-        "bg-green-50 hover:bg-green-100": line.sign === "+",
-        "bg-white hover:bg-gray-100": line.sign === null,
-      })}
-    >
-      <LineNumber
-        {...numberProps}
-        number={line.showLeftNumber ? line.leftNumber : null}
-        onClick={onClickNumber}
-      />
-      <LineNumber
-        {...numberProps}
-        number={line.showRightNumber ? line.rightNumber : null}
-        onClick={onClickNumber}
-      />
-      <div role="cell" className="w-8 text-center shrink-0">
-        {line.sign}
+    <>
+      <div
+        role="row"
+        className={classnames({
+          flex: true,
+          "bg-red-50 hover:bg-red-100": line.sign === "-",
+          "bg-green-50 hover:bg-green-100": line.sign === "+",
+          "bg-white hover:bg-gray-100": line.sign === null,
+        })}
+      >
+        <LineNumber
+          {...numberProps}
+          number={line.showLeftNumber ? line.leftNumber : null}
+          onClick={onClickNumber}
+        />
+        <LineNumber
+          {...numberProps}
+          number={line.showRightNumber ? line.rightNumber : null}
+          onClick={onClickNumber}
+        />
+        <div role="cell" className="w-8 text-center shrink-0">
+          {line.sign}
+        </div>
+        <DiffChars
+          isEditing={isEditing}
+          sentence={line.sentence}
+          chars={line.chars}
+          onUpdate={onClickUpdate}
+          onCancel={onCancel}
+        />
       </div>
-      <DiffChars
-        isEditing={isEditing}
-        sentence={line.sentence}
-        chars={line.chars}
-        cursorPointer={line.sign !== "-"}
-        onClick={onClickSentence}
-        onUpdate={onUpdate}
-        onCancel={onCancel}
-      />
-    </div>
+      <div className="relative">
+        {showMenu && (
+          <Menu
+            buttons={menuButtons}
+            onAdd={onClickAdd}
+            onRemove={onClickRemove}
+            onEdit={onClickEdit}
+            onClose={onCloseMenu}
+          />
+        )}
+      </div>
+    </>
   );
 };
 
@@ -178,46 +196,64 @@ type DiffCheckerProps = {
 };
 
 const DiffChecker = ({ oldDoc, newDoc, onChangeArticle }: DiffCheckerProps) => {
-  const [numberToEdit, setNumberToEdit] = useState<number | null>(null);
+  const [theLineId, setTheLineId] = useState<number | null>(null);
+  const [lineIdToEdit, setLineIdToEdit] = useState<number | null>(null);
   const diff = makeDiff(oldDoc, newDoc);
   const lines = diffWithoutSplit(diff);
 
-  const onAdd = (line: SingleLine) => {
-    const newArticle = addSentence(diff, line);
-    onChangeArticle(newArticle);
+  const onShowMenu = (lineId: number) => {
+    setTheLineId(lineId);
+    setLineIdToEdit(null);
   };
 
-  const onRemove = (line: SingleLine) => {
-    const newArticle = removeSentence(diff, line);
-    onChangeArticle(newArticle);
+  const onCloseMenu = () => {
+    setTheLineId(null);
+    setLineIdToEdit(null);
   };
 
-  const onEdit = (line: SingleLine) => {
-    setNumberToEdit(line.rightNumber);
+  const onAdd = (lineId: number) => {
+    const newArticle = addSentence(diff, lines[lineId]);
+    onChangeArticle(newArticle);
+    setTheLineId(null);
+    setLineIdToEdit(null);
   };
 
-  const onUpdate = (markdown: string) => {
-    if (numberToEdit === null) return;
-    const newArticle = updateSentece(diff, markdown, numberToEdit);
+  const onRemove = (lineId: number) => {
+    const newArticle = removeSentence(diff, lines[lineId]);
     onChangeArticle(newArticle);
-    setNumberToEdit(null);
+    setTheLineId(null);
+    setLineIdToEdit(null);
+  };
+
+  const onEdit = (lineId: number) => {
+    setTheLineId(null);
+    setLineIdToEdit(lineId);
+  };
+
+  const onUpdate = (lineId: number, markdown: string) => {
+    const newArticle = updateSentece(diff, lines[lineId], markdown);
+    onChangeArticle(newArticle);
+    setTheLineId(null);
+    setLineIdToEdit(null);
   };
 
   const onCancel = () => {
-    setNumberToEdit(null);
+    setTheLineId(null);
+    setLineIdToEdit(null);
   };
 
   if (!oldDoc && !newDoc) return null;
   return (
     <>
       <div role="table" className="text-sm leading-relaxed">
-        {lines.map((line, i) => (
+        {lines.map((line) => (
           <DiffRow
-            key={i}
+            key={line.id}
             line={line}
-            isEditing={
-              line.rightNumber === numberToEdit && line.showRightNumber
-            }
+            showMenu={line.id === theLineId}
+            isEditing={line.id === lineIdToEdit}
+            onShowMenu={onShowMenu}
+            onCloseMenu={onCloseMenu}
             onAdd={onAdd}
             onRemove={onRemove}
             onEdit={onEdit}

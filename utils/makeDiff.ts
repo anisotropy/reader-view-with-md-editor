@@ -13,6 +13,7 @@ export type Line = {
 };
 
 export type SingleLine = {
+  id: number;
   leftNumber: number;
   rightNumber: number;
   showLeftNumber: boolean;
@@ -187,6 +188,7 @@ const makeDiff = (oldDoc: string, newDoc: string) => {
 
 export const diffWithoutSplit = (lines: Lines) => {
   const newLines: SingleLine[] = [];
+  let id = 0;
   lines.forEach(({ left, right }) => {
     const numbers = {
       leftNumber: left.number || left.prevNumber,
@@ -195,6 +197,7 @@ export const diffWithoutSplit = (lines: Lines) => {
 
     if (left.sign === null || right.sign === null) {
       newLines.push({
+        id: id++,
         ...numbers,
         showLeftNumber: left.number !== null,
         showRightNumber: right.number !== null,
@@ -206,6 +209,7 @@ export const diffWithoutSplit = (lines: Lines) => {
       });
     } else {
       newLines.push({
+        id: id++,
         ...numbers,
         showLeftNumber: true,
         showRightNumber: false,
@@ -214,6 +218,7 @@ export const diffWithoutSplit = (lines: Lines) => {
         sentence: left.sentence as string,
       });
       newLines.push({
+        id: id++,
         ...numbers,
         showLeftNumber: false,
         showRightNumber: true,
@@ -281,10 +286,10 @@ export const removeSentence = (diff: Lines, line: SingleLine) => {
 
 export const updateSentece = (
   diff: Lines,
-  sentenceToUpdate: string,
-  lineNumber: number
+  line: SingleLine,
+  sentenceToUpdate: string
 ) => {
-  return update(diff, sentenceToUpdate, lineNumber);
+  return update(diff, sentenceToUpdate, line.rightNumber);
 };
 
 export default makeDiff;

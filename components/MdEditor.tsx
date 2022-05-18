@@ -44,7 +44,7 @@ const MdEditor = ({ initialValue, onUpdate, onCancel }: MdEditorProps) => {
         <Button submit color="blue">
           수정 완료
         </Button>
-        <Button color="gray" onClick={onCancel}>
+        <Button color="slate" onClick={onCancel}>
           수정 취소
         </Button>
       </div>
