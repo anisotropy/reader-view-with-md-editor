@@ -4,7 +4,8 @@ type ButtonProps = {
   submit?: boolean;
   color?: "blue" | "green" | "red" | "slate";
   textSize?: "sm";
-  children: string;
+  icon?: JSX.Element;
+  text: string;
   onClick?: () => void;
 };
 
@@ -12,10 +13,12 @@ const Button = ({
   submit,
   color = "blue",
   textSize = "sm",
-  children,
+  icon,
+  text,
   onClick,
 }: ButtonProps) => {
   const className = classNames({
+    "flex items-center space-x-1": true,
     "rounded border-0 leading-none py-2 px-3 text-white outline-offset-2": true,
     "bg-sky-500 hover:bg-sky-400 outline-sky-400": color === "blue",
     "bg-green-500 hover:bg-green-400 outline-green-400": color === "green",
@@ -30,7 +33,8 @@ const Button = ({
       className={className}
       onClick={onClick}
     >
-      {children}
+      {icon}
+      <span>{text}</span>
     </button>
   );
 };

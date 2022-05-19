@@ -79,7 +79,7 @@ const DiffRow = ({
 }: DiffRowProps) => {
   const menuButtons = {
     add: line.sign === "-",
-    remove: line.sign === null,
+    remove: line.sign !== "-",
     edit: line.sign !== "-",
   };
 

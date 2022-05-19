@@ -1,4 +1,6 @@
 import Button from "./Button";
+import Add from "./icons/Add";
+import Remove from "./icons/Remove";
 
 type MenuProps = {
   buttons: { add: boolean; remove: boolean; edit: boolean };
@@ -12,23 +14,18 @@ const Menu = ({ buttons, onAdd, onRemove, onEdit, onClose }: MenuProps) => {
   return (
     <div className="flex space-x-4 my-2">
       {buttons.add && (
-        <Button color="red" onClick={onAdd}>
-          Add
-        </Button>
+        <Button color="red" onClick={onAdd} icon={<Add />} text="Add" />
       )}
       {buttons.remove && (
-        <Button color="green" onClick={onRemove}>
-          Remove
-        </Button>
+        <Button
+          color="green"
+          onClick={onRemove}
+          icon={<Remove />}
+          text="Remove"
+        />
       )}
-      {buttons.edit && (
-        <Button color="blue" onClick={onEdit}>
-          Edit
-        </Button>
-      )}
-      <Button color="slate" onClick={onClose}>
-        Close
-      </Button>
+      {buttons.edit && <Button color="blue" onClick={onEdit} text="Edit" />}
+      <Button color="slate" onClick={onClose} text="Close" />
     </div>
   );
 };

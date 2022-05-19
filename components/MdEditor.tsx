@@ -42,12 +42,8 @@ const MdEditor = ({ initialValue, onUpdate, onCancel }: MdEditorProps) => {
       />
       <div style={{ height: "1px" }} />
       <div className="flex space-x-4 mb-2">
-        <Button submit color="blue">
-          Update
-        </Button>
-        <Button color="slate" onClick={onCancel}>
-          Cancel
-        </Button>
+        <Button submit color="blue" text="Update" />
+        <Button color="slate" onClick={onCancel} text="Cancle" />
       </div>
     </form>
   );
