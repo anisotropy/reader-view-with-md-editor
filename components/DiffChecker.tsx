@@ -52,41 +52,41 @@ const DiffChars = ({
   );
 };
 
-type LineNumberProps = {
-  color: "red" | "green" | "gray";
-  cursorPointer: boolean;
-  number: number | null;
-  onClick: () => void;
-};
+// type LineNumberProps = {
+//   color: "red" | "green" | "gray";
+//   cursorPointer: boolean;
+//   number: number | null;
+//   onClick: () => void;
+// };
 
-const LineNumber = ({
-  color,
-  cursorPointer,
-  number,
-  onClick,
-}: LineNumberProps) => {
-  return (
-    <div
-      role="cell"
-      className={classnames(
-        "w-10",
-        "text-right",
-        "pr-1.5",
-        "text-slate-500",
-        "shrink-0",
-        {
-          "bg-red-100 hover:bg-red-200": color === "red",
-          "bg-green-100 hover:bg-green-200": color === "green",
-          "bg-gray-100 hover:bg-gray-200": color === "gray",
-          "cursor-pointer": cursorPointer,
-        }
-      )}
-      onClick={onClick}
-    >
-      {number}
-    </div>
-  );
-};
+// const LineNumber = ({
+//   color,
+//   cursorPointer,
+//   number,
+//   onClick,
+// }: LineNumberProps) => {
+//   return (
+//     <div
+//       role="cell"
+//       className={classnames(
+//         "w-10",
+//         "text-right",
+//         "pr-1.5",
+//         "text-slate-500",
+//         "shrink-0",
+//         {
+//           "bg-red-100 hover:bg-red-200": color === "red",
+//           "bg-green-100 hover:bg-green-200": color === "green",
+//           "bg-gray-100 hover:bg-gray-200": color === "gray",
+//           "cursor-pointer": cursorPointer,
+//         }
+//       )}
+//       onClick={onClick}
+//     >
+//       {number}
+//     </div>
+//   );
+// };
 
 type DiffRowProps = {
   line: SingleLine;
@@ -122,44 +122,37 @@ const DiffRow = ({
   const onClickAdd = () => onAdd(line.id);
   const onClickRemove = () => onRemove(line.id);
   const onClickEdit = () => onEdit(line.id);
-  const onClickNumber = () => onShowMenu(line.id);
   const onClickUpdate = (markdown: string) => onUpdate(line.id, markdown);
-
-  const numberProps = {
-    color:
-      line.sign === "-"
-        ? "red"
-        : line.sign === "+"
-        ? "green"
-        : ("gray" as "red" | "green" | "gray"),
-    cursorPointer: true,
+  const onClickLine = () => {
+    if (!showMenu && !isEditing) onShowMenu(line.id);
   };
+
+  // const numberProps = {
+  //   color:
+  //     line.sign === "-"
+  //       ? "red"
+  //       : line.sign === "+"
+  //       ? "green"
+  //       : ("gray" as "red" | "green" | "gray"),
+  //   cursorPointer: true,
+  // };
 
   return (
     <>
       <div
         role="row"
         className={classnames({
-          flex: true,
+          "flex cursor-pointer pr-2": true,
           "bg-red-50 hover:bg-red-100": line.sign === "-",
           "bg-green-50 hover:bg-green-100": line.sign === "+",
           "bg-white hover:bg-gray-100": line.sign === null,
         })}
+        onClick={onClickLine}
       >
-        <LineNumber
-          {...numberProps}
-          number={line.showLeftNumber ? line.leftNumber : null}
-          onClick={onClickNumber}
-        />
-        <LineNumber
-          {...numberProps}
-          number={line.showRightNumber ? line.rightNumber : null}
-          onClick={onClickNumber}
-        />
         <div role="cell" className="w-8 text-center shrink-0">
           {line.sign}
         </div>
-        <div role="cell" className="grow whitespace-pre-wrap">
+        <div role="cell" className="grow whitespace-pre-wrap break-all">
           <DiffChars
             isEditing={isEditing}
             sentence={line.sentence}
@@ -235,25 +228,23 @@ const DiffChecker = ({ oldDoc, newDoc, onChangeArticle }: DiffCheckerProps) => {
 
   if (!oldDoc && !newDoc) return null;
   return (
-    <>
-      <div role="table" className="text-sm leading-relaxed">
-        {lines.map((line) => (
-          <DiffRow
-            key={line.id}
-            line={line}
-            showMenu={line.id === theLineId && lineIdToEdit === null}
-            isEditing={line.id === lineIdToEdit}
-            onShowMenu={onShowMenu}
-            onCloseMenu={onCloseMenu}
-            onAdd={onAdd}
-            onRemove={onRemove}
-            onEdit={onEdit}
-            onUpdate={onUpdate}
-            onCancel={onCancel}
-          />
-        ))}
-      </div>
-    </>
+    <div className="text-slate-700 leading-relaxed">
+      {lines.map((line) => (
+        <DiffRow
+          key={line.id}
+          line={line}
+          showMenu={line.id === theLineId && lineIdToEdit === null}
+          isEditing={line.id === lineIdToEdit}
+          onShowMenu={onShowMenu}
+          onCloseMenu={onCloseMenu}
+          onAdd={onAdd}
+          onRemove={onRemove}
+          onEdit={onEdit}
+          onUpdate={onUpdate}
+          onCancel={onCancel}
+        />
+      ))}
+    </div>
   );
 };
 

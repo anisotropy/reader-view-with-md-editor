@@ -7,7 +7,7 @@ type MarkdownViewer = {
 
 const MarkdownViewer = ({ markdown }: MarkdownViewer) => {
   return (
-    <article className="prose">
+    <article className="prose ">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
     </article>
   );
