@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Article } from "./HomePage";
 
 type InputUrlProps = { onChangeUrl: (url: string) => void };
 
