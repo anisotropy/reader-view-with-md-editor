@@ -52,42 +52,6 @@ const DiffChars = ({
   );
 };
 
-// type LineNumberProps = {
-//   color: "red" | "green" | "gray";
-//   cursorPointer: boolean;
-//   number: number | null;
-//   onClick: () => void;
-// };
-
-// const LineNumber = ({
-//   color,
-//   cursorPointer,
-//   number,
-//   onClick,
-// }: LineNumberProps) => {
-//   return (
-//     <div
-//       role="cell"
-//       className={classnames(
-//         "w-10",
-//         "text-right",
-//         "pr-1.5",
-//         "text-slate-500",
-//         "shrink-0",
-//         {
-//           "bg-red-100 hover:bg-red-200": color === "red",
-//           "bg-green-100 hover:bg-green-200": color === "green",
-//           "bg-gray-100 hover:bg-gray-200": color === "gray",
-//           "cursor-pointer": cursorPointer,
-//         }
-//       )}
-//       onClick={onClick}
-//     >
-//       {number}
-//     </div>
-//   );
-// };
-
 type DiffRowProps = {
   line: SingleLine;
   showMenu: boolean;
@@ -115,7 +79,7 @@ const DiffRow = ({
 }: DiffRowProps) => {
   const menuButtons = {
     add: line.sign === "-",
-    remove: line.sign === "+",
+    remove: line.sign === null,
     edit: line.sign !== "-",
   };
 
@@ -126,16 +90,6 @@ const DiffRow = ({
   const onClickLine = () => {
     if (!showMenu && !isEditing) onShowMenu(line.id);
   };
-
-  // const numberProps = {
-  //   color:
-  //     line.sign === "-"
-  //       ? "red"
-  //       : line.sign === "+"
-  //       ? "green"
-  //       : ("gray" as "red" | "green" | "gray"),
-  //   cursorPointer: true,
-  // };
 
   return (
     <>
