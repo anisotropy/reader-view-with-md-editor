@@ -13,21 +13,21 @@ const Menu = ({ buttons, onAdd, onRemove, onEdit, onClose }: MenuProps) => {
     <div className="flex space-x-4 my-2">
       {buttons.add && (
         <Button color="red" onClick={onAdd}>
-          추가
+          Add
         </Button>
       )}
       {buttons.remove && (
         <Button color="green" onClick={onRemove}>
-          삭제
+          Remove
         </Button>
       )}
       {buttons.edit && (
         <Button color="blue" onClick={onEdit}>
-          수정
+          Edit
         </Button>
       )}
       <Button color="slate" onClick={onClose}>
-        닫기
+        Close
       </Button>
     </div>
   );
