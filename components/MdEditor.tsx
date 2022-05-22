@@ -49,7 +49,7 @@ const MdEditor = ({ initialValue, onUpdate, onCancel }: MdEditorProps) => {
           color="slate"
           onClick={onCancel}
           icon={<Dismiss />}
-          text="Cancle"
+          text="Cancel"
         />
       </div>
     </form>
