@@ -1,5 +1,7 @@
 import Button from "./Button";
 import Add from "./icons/Add";
+import Dismiss from "./icons/Dismiss";
+import Edit from "./icons/Edit";
 import Remove from "./icons/Remove";
 
 type MenuProps = {
@@ -24,8 +26,10 @@ const Menu = ({ buttons, onAdd, onRemove, onEdit, onClose }: MenuProps) => {
           text="Remove"
         />
       )}
-      {buttons.edit && <Button color="blue" onClick={onEdit} text="Edit" />}
-      <Button color="slate" onClick={onClose} text="Close" />
+      {buttons.edit && (
+        <Button color="blue" onClick={onEdit} icon={<Edit />} text="Edit" />
+      )}
+      <Button color="slate" onClick={onClose} icon={<Dismiss />} text="Close" />
     </div>
   );
 };

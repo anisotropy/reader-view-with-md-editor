@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import Button from "./Button";
+import Check from "./icons/Check";
+import Dismiss from "./icons/Dismiss";
 
 type FormInput = {
   markdown: string;
@@ -42,8 +44,13 @@ const MdEditor = ({ initialValue, onUpdate, onCancel }: MdEditorProps) => {
       />
       <div style={{ height: "1px" }} />
       <div className="flex space-x-4 mb-2">
-        <Button submit color="blue" text="Update" />
-        <Button color="slate" onClick={onCancel} text="Cancle" />
+        <Button submit color="blue" icon={<Check />} text="Update" />
+        <Button
+          color="slate"
+          onClick={onCancel}
+          icon={<Dismiss />}
+          text="Cancle"
+        />
       </div>
     </form>
   );
