@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useRef, useState } from "react";
 import axios from "axios";
 import DiffChecker from "./DiffChecker";
 import InputUrl from "./InputUrl";
@@ -22,6 +22,26 @@ const App = () => {
     setArticle({ ...article, readible });
   };
 
+  // Scroll sync
+
+  const editorEl = useRef<HTMLDivElement>(null);
+  const [scrollRatio, setScrollRatio] = useState<number | null>(null);
+
+  const onViewerScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.currentTarget;
+    const maxScrollTop = target.scrollHeight - target.clientHeight;
+    const scrollRatio = target.scrollTop / maxScrollTop;
+    setScrollRatio(scrollRatio);
+  };
+
+  const onChangeScrollRatio = (elementTop: number) => {
+    if (editorEl?.current) {
+      editorEl.current.scrollTop = elementTop - editorEl.current.offsetTop;
+    }
+  };
+
+  // ////
+
   return (
     <div className="flex flex-col items-center h-screen">
       <InputUrl onChangeUrl={onWebClip} />
@@ -33,11 +53,13 @@ const App = () => {
             "border border-b-0 rounded-t-lg",
             "md:border md:rounded-none md:border-r-0 md:rounded-l-lg p-2"
           )}
+          onScroll={onViewerScroll}
         >
           <MarkdownViewer markdown={article.readible} />
         </div>
         <div
           role="table"
+          ref={editorEl}
           className={classNames(
             "overflow-y-scroll",
             "border border-slate-400",
@@ -45,9 +67,12 @@ const App = () => {
           )}
         >
           <DiffChecker
+            wrapperHeight={editorEl?.current?.clientHeight}
+            scrollRatio={scrollRatio}
             oldDoc={article.origin}
             newDoc={article.readible}
             onChangeArticle={onChangeArticle}
+            onChangeScrollRatio={onChangeScrollRatio}
           />
         </div>
       </div>

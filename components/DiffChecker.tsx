@@ -8,7 +8,7 @@ import makeDiff, {
 } from "utils/makeDiff";
 import classnames from "classnames";
 import MdEditor from "./MdEditor";
-import { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Menu from "./Menu";
 
 type DiffCharProps = {
@@ -63,6 +63,7 @@ type DiffRowProps = {
   onEdit: (lineId: number) => void;
   onUpdate: (lineId: number, markdown: string) => void;
   onCancel: () => void;
+  onMount: (line: SingleLine, element: HTMLDivElement) => void;
 };
 
 const DiffRow = ({
@@ -76,7 +77,9 @@ const DiffRow = ({
   onEdit,
   onUpdate,
   onCancel,
+  onMount,
 }: DiffRowProps) => {
+  const element = useRef<HTMLDivElement>(null);
   const menuButtons = {
     add: line.sign === "-",
     remove: line.sign !== "-",
@@ -91,55 +94,78 @@ const DiffRow = ({
     if (!showMenu && !isEditing) onShowMenu(line.id);
   };
 
+  useEffect(() => {
+    if (element?.current) {
+      onMount(line, element.current);
+    }
+  }, [line, element, onMount]);
+
   return (
-    <>
-      <div
-        role="row"
-        className={classnames({
-          "flex cursor-pointer pr-2": true,
-          "bg-red-50 hover:bg-red-100": line.sign === "-",
-          "bg-green-50 hover:bg-green-100": line.sign === "+",
-          "bg-white hover:bg-gray-100": line.sign === null,
-        })}
-        onClick={onClickLine}
-      >
-        <div role="cell" className="w-8 text-center shrink-0">
-          {line.sign}
-        </div>
-        <div role="cell" className="grow whitespace-pre-wrap break-all">
-          <DiffChars
-            isEditing={isEditing}
-            sentence={line.sentence}
-            chars={line.chars}
-            onUpdate={onClickUpdate}
-            onCancel={onCancel}
-          />
-          {showMenu && (
-            <Menu
-              buttons={menuButtons}
-              onAdd={onClickAdd}
-              onRemove={onClickRemove}
-              onEdit={onClickEdit}
-              onClose={onCloseMenu}
-            />
-          )}
-        </div>
+    <div
+      role="row"
+      ref={element}
+      className={classnames({
+        "flex cursor-pointer pr-2": true,
+        "bg-red-50 hover:bg-red-100": line.sign === "-",
+        "bg-green-50 hover:bg-green-100": line.sign === "+",
+        "bg-white hover:bg-gray-100": line.sign === null,
+      })}
+      onClick={onClickLine}
+    >
+      <div role="cell" className="w-8 text-center shrink-0">
+        {line.sign}
       </div>
-    </>
+      <div role="cell" className="grow whitespace-pre-wrap break-all">
+        <DiffChars
+          isEditing={isEditing}
+          sentence={line.sentence}
+          chars={line.chars}
+          onUpdate={onClickUpdate}
+          onCancel={onCancel}
+        />
+        {showMenu && (
+          <Menu
+            buttons={menuButtons}
+            onAdd={onClickAdd}
+            onRemove={onClickRemove}
+            onEdit={onClickEdit}
+            onClose={onCloseMenu}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 
 type DiffCheckerProps = {
+  wrapperHeight?: number;
+  scrollRatio: number | null;
   oldDoc: string;
   newDoc: string;
   onChangeArticle: (readibleArticle: string) => void;
+  onChangeScrollRatio: (elementTop: number) => void;
 };
 
-const DiffChecker = ({ oldDoc, newDoc, onChangeArticle }: DiffCheckerProps) => {
+const DiffChecker = ({
+  wrapperHeight,
+  scrollRatio,
+  oldDoc,
+  newDoc,
+  onChangeArticle,
+  onChangeScrollRatio,
+}: DiffCheckerProps) => {
   const [theLineId, setTheLineId] = useState<number | null>(null);
   const [lineIdToEdit, setLineIdToEdit] = useState<number | null>(null);
+  const wrapperEl = useRef<HTMLDivElement>(null);
   const diff = makeDiff(oldDoc, newDoc);
   const lines = diffWithoutSplit(diff);
+  const tops = lines.map(() => ({
+    top: 0,
+    realTop: 0,
+    height: 0,
+    rightSide: false,
+  }));
+  let countMountEl = 0;
 
   const onShowMenu = (lineId: number) => {
     setTheLineId(lineId);
@@ -180,9 +206,44 @@ const DiffChecker = ({ oldDoc, newDoc, onChangeArticle }: DiffCheckerProps) => {
     setLineIdToEdit(null);
   };
 
+  const onMount = (line: SingleLine, element: HTMLDivElement) => {
+    tops[line.id] = {
+      top: -1,
+      realTop: line.showRightNumber ? element.offsetTop : -1,
+      height: line.showRightNumber ? element.offsetHeight : 0,
+      rightSide: line.showRightNumber,
+    };
+    countMountEl++;
+  };
+
+  useEffect(() => {
+    if (countMountEl < tops.length) return;
+    let lastTop = null;
+    for (let i = 0; i < tops.length; i++) {
+      if (!tops[i].rightSide) continue;
+      tops[i].top = lastTop ? lastTop.top + lastTop.height : 0;
+      lastTop = tops[i];
+    }
+  }, [tops, countMountEl]);
+
+  useEffect(() => {
+    if (!wrapperEl?.current || scrollRatio == null) return;
+    const height = tops.reduce(
+      (height, t) => height + (t.rightSide ? t.height : 0),
+      0
+    );
+    const theTop = (height - (wrapperHeight || 0)) * scrollRatio;
+    const theTopValues = tops.find(
+      (t) => t.top <= theTop && theTop < t.top + t.height
+    );
+    if (!theTopValues) return;
+    const offsetTop = theTopValues.realTop + theTop - theTopValues.top;
+    onChangeScrollRatio(offsetTop);
+  }, [wrapperEl, scrollRatio, tops, onChangeScrollRatio, wrapperHeight]);
+
   if (!oldDoc && !newDoc) return null;
   return (
-    <div className="text-slate-700 leading-relaxed">
+    <div ref={wrapperEl} className="text-slate-700 leading-relaxed">
       {lines.map((line) => (
         <DiffRow
           key={line.id}
@@ -196,6 +257,7 @@ const DiffChecker = ({ oldDoc, newDoc, onChangeArticle }: DiffCheckerProps) => {
           onEdit={onEdit}
           onUpdate={onUpdate}
           onCancel={onCancel}
+          onMount={onMount}
         />
       ))}
     </div>
