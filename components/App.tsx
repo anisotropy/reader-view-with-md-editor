@@ -1,9 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import axios from "axios";
 import DiffChecker from "./DiffChecker";
 import InputUrl from "./InputUrl";
 import MarkdownViewer from "./MarkdownViewer";
 import classNames from "classnames";
+import { throttle } from "lodash";
 
 export type Article = { origin: string; readible: string };
 
@@ -27,11 +28,16 @@ const App = () => {
   const editorEl = useRef<HTMLDivElement>(null);
   const [scrollRatio, setScrollRatio] = useState<number | null>(null);
 
+  const setThrottledScrollRatio = useMemo(
+    () => throttle((scrollRatio: number) => setScrollRatio(scrollRatio), 100),
+    []
+  );
+
   const onViewerScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const target = event.currentTarget;
     const maxScrollTop = target.scrollHeight - target.clientHeight;
     const scrollRatio = target.scrollTop / maxScrollTop;
-    setScrollRatio(scrollRatio);
+    setThrottledScrollRatio(scrollRatio);
   };
 
   const onChangeScrollRatio = (elementTop: number) => {
