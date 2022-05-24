@@ -36,7 +36,7 @@ const App = () => {
     null
   );
 
-  const onMountLine = (lineId: number, top: number, height: number) => {
+  const onChangeLineSize = (lineId: number, top: number, height: number) => {
     editorLineSizes.current[lineId] = { top, height };
   };
 
@@ -159,7 +159,7 @@ const App = () => {
             oldDoc={article.origin}
             newDoc={article.readible}
             onChangeArticle={onChangeArticle}
-            onMountLine={onMountLine}
+            onChangeLineSize={onChangeLineSize}
           />
         </div>
       </div>

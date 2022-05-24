@@ -8,7 +8,13 @@ import makeDiff, {
 } from "utils/makeDiff";
 import classnames from "classnames";
 import MdEditor from "./MdEditor";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Menu from "./Menu";
 
 type DiffCharProps = {
@@ -63,7 +69,7 @@ type DiffRowProps = {
   onEdit: (lineId: number) => void;
   onUpdate: (lineId: number, markdown: string) => void;
   onCancel: () => void;
-  onMount: (line: SingleLine, element: HTMLDivElement) => void;
+  onChangeSize: (line: SingleLine, element: HTMLDivElement) => void;
 };
 
 const DiffRow = ({
@@ -77,7 +83,7 @@ const DiffRow = ({
   onEdit,
   onUpdate,
   onCancel,
-  onMount,
+  onChangeSize,
 }: DiffRowProps) => {
   const element = useRef<HTMLDivElement>(null);
   const menuButtons = {
@@ -95,10 +101,14 @@ const DiffRow = ({
   };
 
   useEffect(() => {
-    if (element?.current) {
-      onMount(line, element.current);
-    }
-  }, [line, element, onMount]);
+    if (!element?.current) return;
+    onChangeSize(line, element.current);
+  }, [
+    line,
+    onChangeSize,
+    element?.current?.offsetTop,
+    element?.current?.offsetHeight,
+  ]);
 
   return (
     <div
@@ -141,67 +151,76 @@ type DiffCheckerProps = {
   oldDoc: string;
   newDoc: string;
   onChangeArticle: (readibleArticle: string) => void;
-  onMountLine: (lineId: number, top: number, heighr: number) => void;
+  onChangeLineSize: (lineId: number, top: number, heighr: number) => void;
 };
 
 const DiffChecker = ({
   oldDoc,
   newDoc,
   onChangeArticle,
-  onMountLine,
+  onChangeLineSize,
 }: DiffCheckerProps) => {
   const [theLineId, setTheLineId] = useState<number | null>(null);
   const [lineIdToEdit, setLineIdToEdit] = useState<number | null>(null);
-  const diff = makeDiff(oldDoc, newDoc);
-  const lines = diffWithoutSplit(diff);
 
-  const onShowMenu = (lineId: number) => {
+  const diff = useMemo(() => makeDiff(oldDoc, newDoc), [oldDoc, newDoc]);
+  const lines = useMemo(() => diffWithoutSplit(diff), [diff]);
+
+  const onShowMenu = useCallback((lineId: number) => {
     setTheLineId(lineId);
     setLineIdToEdit(null);
-  };
+  }, []);
 
-  const onCloseMenu = () => {
+  const onCloseMenu = useCallback(() => {
     setTheLineId(null);
     setLineIdToEdit(null);
-  };
+  }, []);
 
-  const onAdd = (lineId: number) => {
-    const newArticle = addSentence(diff, lines[lineId]);
-    onChangeArticle(newArticle);
-    setTheLineId(null);
-    setLineIdToEdit(null);
-  };
+  const onAdd = useCallback(
+    (lineId: number) => {
+      const newArticle = addSentence(diff, lines[lineId]);
+      onChangeArticle(newArticle);
+      setTheLineId(null);
+      setLineIdToEdit(null);
+    },
+    [diff, lines, onChangeArticle]
+  );
 
-  const onRemove = (lineId: number) => {
-    const newArticle = removeSentence(diff, lines[lineId]);
-    onChangeArticle(newArticle);
-    setTheLineId(null);
-    setLineIdToEdit(null);
-  };
+  const onRemove = useCallback(
+    (lineId: number) => {
+      const newArticle = removeSentence(diff, lines[lineId]);
+      onChangeArticle(newArticle);
+      setTheLineId(null);
+      setLineIdToEdit(null);
+    },
+    [diff, lines, onChangeArticle]
+  );
 
-  const onEdit = (lineId: number) => {
+  const onEdit = useCallback((lineId: number) => {
     setLineIdToEdit(lineId);
-  };
+  }, []);
 
-  const onUpdate = (lineId: number, markdown: string) => {
-    const newArticle = updateSentece(diff, lines[lineId], markdown);
-    onChangeArticle(newArticle);
-    setTheLineId(null);
+  const onUpdate = useCallback(
+    (lineId: number, markdown: string) => {
+      const newArticle = updateSentece(diff, lines[lineId], markdown);
+      onChangeArticle(newArticle);
+      setTheLineId(null);
+      setLineIdToEdit(null);
+    },
+    [diff, lines, onChangeArticle]
+  );
+
+  const onCancel = useCallback(() => {
     setLineIdToEdit(null);
-  };
+  }, []);
 
-  const onCancel = () => {
-    setLineIdToEdit(null);
-  };
-
-  // Scroll Sync ////
-
-  const onMount = (line: SingleLine, element: HTMLDivElement) => {
-    if (!line.showRightNumber) return;
-    onMountLine(line.id, element.offsetTop, element.offsetHeight);
-  };
-
-  //// Scroll Sync
+  const onChangeSize = useCallback(
+    (line: SingleLine, element: HTMLDivElement) => {
+      if (!line.showRightNumber) return;
+      onChangeLineSize(line.id, element.offsetTop, element.offsetHeight);
+    },
+    [onChangeLineSize]
+  );
 
   if (!oldDoc && !newDoc) return null;
   return (
@@ -219,7 +238,7 @@ const DiffChecker = ({
           onEdit={onEdit}
           onUpdate={onUpdate}
           onCancel={onCancel}
-          onMount={onMount}
+          onChangeSize={onChangeSize}
         />
       ))}
     </div>
