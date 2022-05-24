@@ -139,20 +139,24 @@ const DiffRow = ({
 
 type DiffCheckerProps = {
   wrapperHeight?: number;
-  scrollRatio: number | null;
+  viewerScrollRatio: number | null;
+  editorScrollTop: number | null;
   oldDoc: string;
   newDoc: string;
   onChangeArticle: (readibleArticle: string) => void;
   onChangeScrollRatio: (elementTop: number) => void;
+  onChangeEditorScrollTop: (viewerScrollTop: number) => void;
 };
 
 const DiffChecker = ({
   wrapperHeight,
-  scrollRatio,
+  viewerScrollRatio,
+  editorScrollTop,
   oldDoc,
   newDoc,
   onChangeArticle,
   onChangeScrollRatio,
+  onChangeEditorScrollTop,
 }: DiffCheckerProps) => {
   const [theLineId, setTheLineId] = useState<number | null>(null);
   const [lineIdToEdit, setLineIdToEdit] = useState<number | null>(null);
@@ -227,19 +231,45 @@ const DiffChecker = ({
   }, [tops, countMountEl]);
 
   useEffect(() => {
-    if (!wrapperEl?.current || scrollRatio == null) return;
+    if (!wrapperEl?.current || viewerScrollRatio === null) return;
     const height = tops.reduce(
       (height, t) => height + (t.rightSide ? t.height : 0),
       0
     );
-    const theTop = (height - (wrapperHeight || 0)) * scrollRatio;
+    const theTop = (height - (wrapperHeight || 0)) * viewerScrollRatio;
     const theTopValues = tops.find(
       (t) => t.top <= theTop && theTop < t.top + t.height
     );
     if (!theTopValues) return;
     const offsetTop = theTopValues.realTop + theTop - theTopValues.top;
     onChangeScrollRatio(offsetTop);
-  }, [wrapperEl, scrollRatio, tops, onChangeScrollRatio, wrapperHeight]);
+  }, [wrapperEl, viewerScrollRatio, tops, onChangeScrollRatio, wrapperHeight]);
+
+  useEffect(() => {
+    if (!wrapperEl?.current || editorScrollTop === null) return;
+    const top = editorScrollTop + wrapperEl.current.offsetTop;
+    const theTopValues = tops.find(
+      (t) => t.realTop <= top && top < t.realTop + t.height
+    );
+    if (!theTopValues) {
+      if (tops[0].realTop > top) onChangeEditorScrollTop(0);
+    } else {
+      const height = tops.reduce(
+        (height, t) => height + (t.rightSide ? t.height : 0),
+        0
+      );
+      const scrollRatio =
+        (theTopValues.top + top - theTopValues.realTop) /
+        (height - (wrapperHeight || 0));
+      onChangeEditorScrollTop(scrollRatio);
+    }
+  }, [
+    editorScrollTop,
+    wrapperEl,
+    tops,
+    onChangeEditorScrollTop,
+    wrapperHeight,
+  ]);
 
   if (!oldDoc && !newDoc) return null;
   return (
