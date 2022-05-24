@@ -138,37 +138,22 @@ const DiffRow = ({
 };
 
 type DiffCheckerProps = {
-  wrapperHeight?: number;
-  editorScrollTop: number | null;
   oldDoc: string;
   newDoc: string;
   onChangeArticle: (readibleArticle: string) => void;
-  onChangeEditorScrollTop: (viewerScrollTop: number) => void;
   onMountLine: (lineId: number, top: number, heighr: number) => void;
 };
 
 const DiffChecker = ({
-  wrapperHeight,
-  editorScrollTop,
   oldDoc,
   newDoc,
   onChangeArticle,
-  onChangeEditorScrollTop,
   onMountLine,
 }: DiffCheckerProps) => {
   const [theLineId, setTheLineId] = useState<number | null>(null);
   const [lineIdToEdit, setLineIdToEdit] = useState<number | null>(null);
-  const wrapperEl = useRef<HTMLDivElement>(null);
   const diff = makeDiff(oldDoc, newDoc);
   const lines = diffWithoutSplit(diff);
-
-  const tops = lines.map(() => ({
-    top: 0,
-    realTop: 0,
-    height: 0,
-    rightSide: false,
-  }));
-  let countMountEl = 0;
 
   const onShowMenu = (lineId: number) => {
     setTheLineId(lineId);
@@ -212,59 +197,15 @@ const DiffChecker = ({
   // Scroll Sync ////
 
   const onMount = (line: SingleLine, element: HTMLDivElement) => {
-    tops[line.id] = {
-      top: -1,
-      realTop: line.showRightNumber ? element.offsetTop : -1,
-      height: line.showRightNumber ? element.offsetHeight : 0,
-      rightSide: line.showRightNumber,
-    };
-    countMountEl++;
-
     if (!line.showRightNumber) return;
     onMountLine(line.id, element.offsetTop, element.offsetHeight);
   };
-
-  useEffect(() => {
-    if (countMountEl < tops.length) return;
-    let lastTop = null;
-    for (let i = 0; i < tops.length; i++) {
-      if (!tops[i].rightSide) continue;
-      tops[i].top = lastTop ? lastTop.top + lastTop.height : 0;
-      lastTop = tops[i];
-    }
-  }, [tops, countMountEl]);
-
-  useEffect(() => {
-    if (!wrapperEl?.current || editorScrollTop === null) return;
-    const top = editorScrollTop + wrapperEl.current.offsetTop;
-    const theTopValues = tops.find(
-      (t) => t.realTop <= top && top < t.realTop + t.height
-    );
-    if (!theTopValues) {
-      if (tops[0].realTop > top) onChangeEditorScrollTop(0);
-    } else {
-      const height = tops.reduce(
-        (height, t) => height + (t.rightSide ? t.height : 0),
-        0
-      );
-      const scrollRatio =
-        (theTopValues.top + top - theTopValues.realTop) /
-        (height - (wrapperHeight || 0));
-      onChangeEditorScrollTop(scrollRatio);
-    }
-  }, [
-    editorScrollTop,
-    wrapperEl,
-    tops,
-    onChangeEditorScrollTop,
-    wrapperHeight,
-  ]);
 
   //// Scroll Sync
 
   if (!oldDoc && !newDoc) return null;
   return (
-    <div ref={wrapperEl} className="text-slate-700 leading-relaxed">
+    <div className="text-slate-700 leading-relaxed">
       {lines.map((line) => (
         <DiffRow
           key={line.id}
