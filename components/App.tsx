@@ -9,6 +9,10 @@ import { throttle } from "lodash";
 export type Article = { origin: string; readible: string };
 
 const App = () => {
+  // scroll sync ////
+  const editorLineSizes = useRef<{ top: number; height: number }[]>([]);
+  //
+
   const [article, setArticle] = useState<Article>({
     origin: "kkk\nccc\naaa",
     readible: "kkz\naaa\nbbb",
@@ -16,31 +20,56 @@ const App = () => {
 
   const onWebClip = async (url: string) => {
     const { data } = await axios.get(`/api/web-clip?url=${encodeURI(url)}`);
+    editorLineSizes.current = [];
     setArticle(data);
   };
 
   const onChangeArticle = (readible: string) => {
+    editorLineSizes.current = [];
     setArticle({ ...article, readible });
   };
 
-  // Scroll sync
-
+  // scroll sync ////
   const editorEl = useRef<HTMLDivElement>(null);
   const viewerEl = useRef<HTMLDivElement>(null);
-  const [viewerScrollRatio, setViewerScrollRatio] = useState<number | null>(
-    null
-  );
+
   const [editorScrollTop, setEditorScrollTop] = useState<number | null>(null);
   const [scrollSide, setScrollSide] = useState<"viewer" | "editor" | null>(
     null
   );
 
+  const onMountLine = (lineId: number, top: number, height: number) => {
+    editorLineSizes.current[lineId] = { top, height };
+  };
+
   const setThrottledViewerScrollRatio = useMemo(
     () =>
-      throttle(
-        (viewerScrollRatio: number) => setViewerScrollRatio(viewerScrollRatio),
-        100
-      ),
+      throttle((viewerScrollRatio: number) => {
+        if (!editorEl?.current) return;
+        const partialScrollHeight = editorLineSizes.current.reduce(
+          (sum, lineSize) => (lineSize ? sum + lineSize.height : sum),
+          0
+        );
+        const relScrollTop =
+          (partialScrollHeight - editorEl.current.clientHeight) *
+          viewerScrollRatio;
+        const { scrollTop } = editorLineSizes.current.reduce(
+          ({ relTop, scrollTop }, lineSize) => {
+            if (!lineSize) return { relTop, scrollTop };
+            const nextRelTop = relTop + lineSize.height;
+            if (relTop <= relScrollTop && relScrollTop < nextRelTop) {
+              scrollTop =
+                lineSize.top +
+                relScrollTop -
+                relTop -
+                (editorEl.current?.offsetTop || 0);
+            }
+            return { relTop: nextRelTop, scrollTop };
+          },
+          { relTop: 0, scrollTop: 0 }
+        );
+        editorEl.current.scrollTop = scrollTop;
+      }, 100),
     []
   );
 
@@ -53,15 +82,8 @@ const App = () => {
     setThrottledViewerScrollRatio(viewerScrollRatio);
   };
 
-  const onChangeScrollRatio = (elementTop: number) => {
-    if (editorEl?.current) {
-      editorEl.current.scrollTop = elementTop - editorEl.current.offsetTop;
-    }
-  };
-
   const onEditorScroll = (event: React.UIEvent<HTMLDivElement>) => {
     if (scrollSide !== "editor") return;
-    setViewerScrollRatio(null);
     setEditorScrollTop(event.currentTarget.scrollTop);
   };
 
@@ -79,7 +101,7 @@ const App = () => {
   const onEditorMouseMove = () => {
     setScrollSide("editor");
   };
-  // ////
+  //
 
   return (
     <div className="flex flex-col items-center h-screen">
@@ -111,13 +133,12 @@ const App = () => {
         >
           <DiffChecker
             wrapperHeight={editorEl?.current?.clientHeight}
-            viewerScrollRatio={viewerScrollRatio}
             editorScrollTop={editorScrollTop}
             oldDoc={article.origin}
             newDoc={article.readible}
             onChangeArticle={onChangeArticle}
-            onChangeScrollRatio={onChangeScrollRatio}
             onChangeEditorScrollTop={onChangeEditorScrollTop}
+            onMountLine={onMountLine}
           />
         </div>
       </div>

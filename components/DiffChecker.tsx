@@ -8,7 +8,7 @@ import makeDiff, {
 } from "utils/makeDiff";
 import classnames from "classnames";
 import MdEditor from "./MdEditor";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Menu from "./Menu";
 
 type DiffCharProps = {
@@ -112,8 +112,8 @@ const DiffRow = ({
       })}
       onClick={onClickLine}
     >
-      <div role="cell" className="w-8 text-center shrink-0">
-        {line.sign}
+      <div role="cell" className="w-8 whitespace-pre-wrap text-center shrink-0">
+        {line.sign || " "}
       </div>
       <div role="cell" className="grow whitespace-pre-wrap break-all">
         <DiffChars
@@ -139,30 +139,29 @@ const DiffRow = ({
 
 type DiffCheckerProps = {
   wrapperHeight?: number;
-  viewerScrollRatio: number | null;
   editorScrollTop: number | null;
   oldDoc: string;
   newDoc: string;
   onChangeArticle: (readibleArticle: string) => void;
-  onChangeScrollRatio: (elementTop: number) => void;
   onChangeEditorScrollTop: (viewerScrollTop: number) => void;
+  onMountLine: (lineId: number, top: number, heighr: number) => void;
 };
 
 const DiffChecker = ({
   wrapperHeight,
-  viewerScrollRatio,
   editorScrollTop,
   oldDoc,
   newDoc,
   onChangeArticle,
-  onChangeScrollRatio,
   onChangeEditorScrollTop,
+  onMountLine,
 }: DiffCheckerProps) => {
   const [theLineId, setTheLineId] = useState<number | null>(null);
   const [lineIdToEdit, setLineIdToEdit] = useState<number | null>(null);
   const wrapperEl = useRef<HTMLDivElement>(null);
   const diff = makeDiff(oldDoc, newDoc);
   const lines = diffWithoutSplit(diff);
+
   const tops = lines.map(() => ({
     top: 0,
     realTop: 0,
@@ -210,6 +209,8 @@ const DiffChecker = ({
     setLineIdToEdit(null);
   };
 
+  // Scroll Sync ////
+
   const onMount = (line: SingleLine, element: HTMLDivElement) => {
     tops[line.id] = {
       top: -1,
@@ -218,6 +219,9 @@ const DiffChecker = ({
       rightSide: line.showRightNumber,
     };
     countMountEl++;
+
+    if (!line.showRightNumber) return;
+    onMountLine(line.id, element.offsetTop, element.offsetHeight);
   };
 
   useEffect(() => {
@@ -229,21 +233,6 @@ const DiffChecker = ({
       lastTop = tops[i];
     }
   }, [tops, countMountEl]);
-
-  useEffect(() => {
-    if (!wrapperEl?.current || viewerScrollRatio === null) return;
-    const height = tops.reduce(
-      (height, t) => height + (t.rightSide ? t.height : 0),
-      0
-    );
-    const theTop = (height - (wrapperHeight || 0)) * viewerScrollRatio;
-    const theTopValues = tops.find(
-      (t) => t.top <= theTop && theTop < t.top + t.height
-    );
-    if (!theTopValues) return;
-    const offsetTop = theTopValues.realTop + theTop - theTopValues.top;
-    onChangeScrollRatio(offsetTop);
-  }, [wrapperEl, viewerScrollRatio, tops, onChangeScrollRatio, wrapperHeight]);
 
   useEffect(() => {
     if (!wrapperEl?.current || editorScrollTop === null) return;
@@ -270,6 +259,8 @@ const DiffChecker = ({
     onChangeEditorScrollTop,
     wrapperHeight,
   ]);
+
+  //// Scroll Sync
 
   if (!oldDoc && !newDoc) return null;
   return (
