@@ -107,10 +107,9 @@ const ScrollSync = ({ viewer, editor, editorLineSizes }: ScrollSyncProps) => {
   const onEditorMouseMove = () => {
     setScrollSide("editor");
   };
-  //
 
   return (
-    <div className="flex-1 overflow-hidden grid grid-rows-2 md:grid-rows-1 md:grid-cols-2 m-4 max-w-7xl">
+    <div className="w-full h-full grid grid-rows-2 md:grid-rows-1 md:grid-cols-2">
       <div
         ref={viewerEl}
         className={classNames(
