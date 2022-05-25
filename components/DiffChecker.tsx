@@ -215,7 +215,11 @@ const DiffChecker = ({
   const onChangeSize = useCallback(
     (line: SingleLine, element: HTMLDivElement) => {
       if (!line.showRightNumber) return;
-      onChangeLineSize(line.id, element.offsetTop, element.offsetHeight);
+      onChangeLineSize(
+        line.rightNumber - 1,
+        element.offsetTop,
+        element.offsetHeight
+      );
     },
     [onChangeLineSize]
   );
