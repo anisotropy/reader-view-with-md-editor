@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import { debounce } from "lodash";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 
 const props = [
   "offsetTop",
@@ -45,19 +46,21 @@ export default function useResize(
     }
   }, [callback, getDiemnsion]);
 
+  const onDebouncedResize = useMemo(() => debounce(onResize, 100), [onResize]);
+
   useEffect(() => {
     if (!window) return;
-    window.addEventListener("resize", onResize);
+    window.addEventListener("resize", onDebouncedResize);
     if (prevOnResize.current) {
       window.removeEventListener("resize", prevOnResize.current);
     }
-    prevOnResize.current = onResize;
-    return () => window.removeEventListener("resize", onResize);
-  }, [onResize]);
+    prevOnResize.current = onDebouncedResize;
+    return () => window.removeEventListener("resize", onDebouncedResize);
+  }, [onDebouncedResize]);
 
   useEffect(() => {
     if (!deps) {
-      onResize();
+      onDebouncedResize();
     } else {
       const isChanged =
         !prevDeps.current ||
@@ -65,7 +68,7 @@ export default function useResize(
           return isChanged || dep !== prevDeps.current?.[i];
         }, false);
       if (isChanged) {
-        onResize();
+        onDebouncedResize();
         prevDeps.current = [...deps];
       }
     }
