@@ -54,10 +54,13 @@ const ScrollSync = ({ viewer, editor, editorLineSizes }: ScrollSyncProps) => {
     [setEditorScrollTop]
   );
 
-  const onViewerScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    if (scrollSide !== "viewer") return;
-    setThrottledEditorScrollTop(event.currentTarget.scrollTop);
-  };
+  const onViewerScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>) => {
+      if (scrollSide !== "viewer") return;
+      setThrottledEditorScrollTop(event.currentTarget.scrollTop);
+    },
+    [scrollSide, setThrottledEditorScrollTop]
+  );
 
   const setViewerScrollTop = useCallback(
     (editorScrollTop: number) => {
@@ -95,10 +98,13 @@ const ScrollSync = ({ viewer, editor, editorLineSizes }: ScrollSyncProps) => {
     [setViewerScrollTop]
   );
 
-  const onEditorScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    if (scrollSide !== "editor") return;
-    setThrottledViewerScrollTop(event.currentTarget.scrollTop);
-  };
+  const onEditorScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>) => {
+      if (scrollSide !== "editor") return;
+      setThrottledViewerScrollTop(event.currentTarget.scrollTop);
+    },
+    [scrollSide, setThrottledViewerScrollTop]
+  );
 
   const onViwerMouseMove = () => {
     setScrollSide("viewer");

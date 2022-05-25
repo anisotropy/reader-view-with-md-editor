@@ -8,14 +8,9 @@ import makeDiff, {
 } from "utils/makeDiff";
 import classnames from "classnames";
 import MdEditor from "./MdEditor";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import Menu from "./Menu";
+import useResize from "hooks/useResize";
 
 type DiffCharProps = {
   isEditing: boolean;
@@ -86,6 +81,7 @@ const DiffRow = ({
   onChangeSize,
 }: DiffRowProps) => {
   const element = useRef<HTMLDivElement>(null);
+
   const menuButtons = {
     add: line.sign === "-",
     remove: line.sign !== "-",
@@ -100,15 +96,17 @@ const DiffRow = ({
     if (!showMenu && !isEditing) onShowMenu(line.id);
   };
 
-  useEffect(() => {
-    if (!element?.current) return;
-    onChangeSize(line, element.current);
-  }, [
-    line,
-    onChangeSize,
-    element?.current?.offsetTop,
-    element?.current?.offsetHeight,
-  ]);
+  useResize(
+    element,
+    useCallback(
+      ({ offsetHeight, offsetTop }) => {
+        if (element?.current && (offsetTop || offsetHeight)) {
+          onChangeSize(line, element.current);
+        }
+      },
+      [line, onChangeSize]
+    )
+  );
 
   return (
     <div
