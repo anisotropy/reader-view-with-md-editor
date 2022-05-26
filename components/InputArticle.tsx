@@ -1,7 +1,8 @@
-import React, { useState } from "react";
 import { SubmitHandler, useForm, useWatch } from "react-hook-form";
 import Button from "./Button";
 import Radio from "./Radio";
+import webClip from "apis/webClip";
+import classNames from "classnames";
 
 type FormInput = {
   source: "url" | "html";
@@ -19,31 +20,58 @@ const InputArticle = ({ onChangeArticle }: InputArticleProps) => {
   });
 
   const source = useWatch({ control, name: "source" });
+  const url = useWatch({ control, name: "url" });
+  const html = useWatch({ control, name: "html" });
 
-  const onSubmit: SubmitHandler<FormInput> = (data) => {
-    console.log(data);
+  const showSubmitButton =
+    (source === "html" && html) || (source === "url" && url);
+
+  const onSubmit: SubmitHandler<FormInput> = async ({ url, html }) => {
+    if (!showSubmitButton) return;
+    if (url || html) {
+      const res = await webClip({ url, html });
+      onChangeArticle(res);
+    } else {
+      // TODO: url과 html 모두 없을 때 경고 메시지 표시
+    }
   };
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-      <div className="flex">
-        <Radio {...register("source")} value="url" selectedValue={source} />
-        <input
-          className="border"
-          {...register("url", { disabled: source !== "url" })}
-          placeholder="Input URL"
-        />
-      </div>
-      <div className="flex">
-        <Radio {...register("source")} value="html" selectedValue={source} />
-        <textarea
-          {...register("html", { disabled: source !== "html" })}
-          placeholder="Input HTML"
-        />
-      </div>
+  const inputClassName = [
+    "flex-1 p-1",
+    "border border-sky-500 outline-none rounded",
+    "placeholder:text-slate-300, placeholder:italic",
+    "disabled:border-slate-300 disabled:text-slate-300 disabled:bg-transparent",
+    "focus:bg-sky-50",
+  ];
 
-      <Button submit text="submit" />
-    </form>
+  return (
+    <div className="flex justify-center">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-2/4 p-4 space-y-2 text-sm text-sky-700"
+      >
+        <div className="flex space-x-2">
+          <Radio {...register("source")} value="url" selectedValue={source} />
+          <input
+            {...register("url", { disabled: source !== "url" })}
+            placeholder="Write a web page address"
+            className={classNames(...inputClassName)}
+          />
+        </div>
+        <div className="flex space-x-2">
+          <Radio {...register("source")} value="html" selectedValue={source} />
+          <textarea
+            {...register("html", { disabled: source !== "html" })}
+            placeholder="Write an HTML document"
+            className={classNames(...inputClassName, "resize-none h-36")}
+          />
+        </div>
+        <div className="flex space-x-2 ml-8">
+          {showSubmitButton && <Button submit text="Use Reader Mode" />}
+          <Button color="slate" text="Cancel" />
+        </div>
+      </form>
+    </div>
   );
 };
 
