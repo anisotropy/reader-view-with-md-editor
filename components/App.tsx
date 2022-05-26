@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import axios from "axios";
 import Body from "./Body";
 import InputUrl from "./InputUrl";
+import webClip from "apis/webClip";
 
 const App = () => {
   const [article, setArticle] = useState({
     origin: "kkk\nccc\naaa",
-    readible: "kkz\naaa\nbbb",
+    readable: "kkz\naaa\nbbb",
   });
 
   const onWebClip = async (url: string) => {
-    const { data } = await axios.get(`/api/web-clip?url=${encodeURI(url)}`);
-    setArticle(data);
+    const res = await webClip({ url });
+    setArticle(res);
   };
 
   const onChangeUrl = (url: string) => {

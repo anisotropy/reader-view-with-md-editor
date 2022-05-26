@@ -3,18 +3,18 @@ import DiffChecker from "./DiffChecker";
 import MarkdownViewer from "./MarkdownViewer";
 import ScrollSync from "./ScrollSync";
 
-type BodyProps = { article: { origin: string; readible: string } };
+type BodyProps = { article: { origin: string; readable: string } };
 
 const Body = ({ article }: BodyProps) => {
   const [localArticle, setLocalArticle] = useState({
     origin: "",
-    readible: "",
+    readable: "",
   });
   const editorLineSizes = useRef<{ top: number; height: number }[]>([]);
 
-  const onChangeArticle = (readible: string) => {
+  const onChangeArticle = (readable: string) => {
     editorLineSizes.current = [];
-    setLocalArticle({ ...localArticle, readible });
+    setLocalArticle({ ...localArticle, readable });
   };
 
   const onChangeLineSize = (lineId: number, top: number, height: number) => {
@@ -28,11 +28,11 @@ const Body = ({ article }: BodyProps) => {
 
   return (
     <ScrollSync
-      viewer={<MarkdownViewer markdown={localArticle.readible} />}
+      viewer={<MarkdownViewer markdown={localArticle.readable} />}
       editor={
         <DiffChecker
           oldDoc={localArticle.origin}
-          newDoc={localArticle.readible}
+          newDoc={localArticle.readable}
           onChangeArticle={onChangeArticle}
           onChangeLineSize={onChangeLineSize}
         />

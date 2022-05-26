@@ -24,7 +24,7 @@ export default function useResize(
   const prevOnResize = useRef<() => void>();
 
   const getDiemnsion = useCallback(() => {
-    if (!window || !element) return prevDimension.current;
+    if (!window || !element?.current) return prevDimension.current;
     return props.reduce<Dimension>((dim, prop) => {
       dim[prop] = element.current[prop];
       return dim;

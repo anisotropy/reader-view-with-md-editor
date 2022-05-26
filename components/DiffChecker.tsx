@@ -148,7 +148,7 @@ const DiffRow = ({
 type DiffCheckerProps = {
   oldDoc: string;
   newDoc: string;
-  onChangeArticle: (readibleArticle: string) => void;
+  onChangeArticle: (readableArticle: string) => void;
   onChangeLineSize: (lineId: number, top: number, heighr: number) => void;
 };
 

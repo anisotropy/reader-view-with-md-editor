@@ -10,9 +10,11 @@ import remarkStringify from "remark-stringify";
 import remarkGfm from "remark-gfm";
 import * as cheerio from "cheerio";
 
-export type WebCilpRes = {
+export type Data = { url?: string; html?: string };
+
+export type Response = {
   origin: string;
-  readible: string;
+  readable: string;
 };
 
 async function convertMarkdown(
@@ -42,33 +44,37 @@ const attachTitle = (markdown: string, title: string) => {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<WebCilpRes>
+  res: NextApiResponse<Response>
 ) {
-  const url = req.query.url as string;
+  const body = req.body as Data;
   let origin = "";
-  let readible = "";
-  let readibleText = "";
+  let readable = "";
+  let readableText = "";
   let title = "";
 
   try {
-    const html = await axios.get(url);
-    const $ = cheerio.load(html.data);
-    origin = $("body").html() || "";
+    if (body.url) {
+      const html = await axios.get(body.url);
+      const $ = cheerio.load(html.data);
+      origin = $("body").html() || "";
+    } else {
+      origin = body.html || "";
+    }
 
-    const doc = new JSDOM(html.data);
-    const readibleDoc = new Readability(doc.window.document).parse();
-    title = readibleDoc?.title || "";
-    readible = readibleDoc?.content || "";
-    readibleText = readibleDoc?.textContent || "";
+    const doc = new JSDOM(origin);
+    const readableDoc = new Readability(doc.window.document).parse();
+    title = readableDoc?.title || "";
+    readable = readableDoc?.content || "";
+    readableText = readableDoc?.textContent || "";
   } catch (error) {
     console.log(error);
   }
 
-  [origin, readible] = await Promise.all([
+  [origin, readable] = await Promise.all([
     convertMarkdown(origin),
-    convertMarkdown(readible),
+    convertMarkdown(readable),
   ]);
 
-  res.status(200).json({ origin, readible: attachTitle(readible, title) });
+  res.status(200).json({ origin, readable: attachTitle(readable, title) });
   //TODO: sentry에서 에러를 catch 할 수 있도록 에러 처리
 }
