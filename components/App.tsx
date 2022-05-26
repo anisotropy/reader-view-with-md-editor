@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Body from "./Body";
-import InputUrl from "./InputUrl";
+import InputArticle from "./InputArticle";
 import webClip from "apis/webClip";
 
 const App = () => {
@@ -14,14 +14,10 @@ const App = () => {
     setArticle(res);
   };
 
-  const onChangeUrl = (url: string) => {
-    onWebClip(url);
-  };
-
   return (
     <div className="flex flex-col items-center h-screen">
       <div className="flex-none">
-        <InputUrl onChangeUrl={onChangeUrl} />
+        <InputArticle onChangeArticle={() => {}} />
       </div>
       <div className="flex-1 p-4 w-full max-w-7xl overflow-hidden">
         <Body article={article} />

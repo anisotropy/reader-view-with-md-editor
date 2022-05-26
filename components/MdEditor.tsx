@@ -42,7 +42,7 @@ const MdEditor = ({ initialValue, onUpdate, onCancel }: MdEditorProps) => {
         defaultValue={initialValue}
         className="p-0 outline-none bg-transparent w-full resize-none"
       />
-      <div style={{ height: "1px" }} />
+      <div style={{ height: "1px" }} /> {/* TODO: fix */}
       <div className="flex space-x-4 mb-2">
         <Button submit color="blue" icon={<Check />} text="Update" />
         <Button
