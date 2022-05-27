@@ -34,7 +34,7 @@ const MdEditor = ({ initialValue, onUpdate, onCancel }: MdEditorProps) => {
   );
 
   return (
-    <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
+    <form className="w-full flex flex-col" onSubmit={handleSubmit(onSubmit)}>
       <textarea
         {...register("markdown", { onChange: changeMdHeight })}
         onFocus={changeMdHeight}
@@ -42,8 +42,7 @@ const MdEditor = ({ initialValue, onUpdate, onCancel }: MdEditorProps) => {
         defaultValue={initialValue}
         className="p-0 outline-none bg-transparent w-full resize-none"
       />
-      <div style={{ height: "1px" }} /> {/* TODO: fix */}
-      <div className="flex space-x-4 mb-2">
+      <div className="flex space-x-4 my-2">
         <Button submit color="blue" icon={<Check />} text="Update" />
         <Button
           color="slate"
