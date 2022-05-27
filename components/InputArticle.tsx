@@ -37,7 +37,6 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
       setIsProcessing(true);
       const res = await webClip({ url, html });
       onChangeArticle(res);
-      onClose();
     } else {
       // TODO: url과 html 모두 없을 때 경고 메시지 표시
     }
