@@ -1,18 +1,30 @@
 import classNames from "classnames";
 import React, { useState, useEffect, useRef } from "react";
+import Button from "./Button";
 import DiffChecker from "./DiffChecker";
+import Copy from "./icons/Copy";
+import Expand from "./icons/Expand";
 import MarkdownViewer from "./MarkdownViewer";
 import ScrollSync from "./ScrollSync";
 
 const headerClassName =
-  "text-sm p-2 border-b border-slate-400 bg-gray-100 text-slate-700";
+  "font-bold p-2 border-b border-slate-400 bg-gray-100 text-slate-700 " +
+  "flex justify-between items-center";
 
 const ViewerHeader = () => {
-  return <div className={classNames(headerClassName)}>Reader View</div>;
+  return (
+    <div className={headerClassName}>
+      <span>Reader View</span> <Button text="Expand" icon={<Expand />} />
+    </div>
+  );
 };
 
 const EditorHeader = () => {
-  return <div className={classNames(headerClassName)}>Markdown Editor</div>;
+  return (
+    <div className={classNames(headerClassName)}>
+      <span>Markdown Editor</span> <Button text="Copy" icon={<Copy />} />
+    </div>
+  );
 };
 
 type BodyProps = { article: { origin: string; readable: string } };
