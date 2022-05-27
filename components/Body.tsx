@@ -3,21 +3,21 @@ import React, { useState, useEffect, useRef } from "react";
 import Button from "./Button";
 import DiffChecker from "./DiffChecker";
 import Copy from "./icons/Copy";
-import Expand from "./icons/Expand";
 import MarkdownViewer from "./MarkdownViewer";
 import ScrollSync from "./ScrollSync";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import Check from "./icons/Check";
 import CheckMark from "./icons/CheckMark";
+import FullScreenMax from "./icons/FullScreenMax";
 
 const headerClassName =
   "font-bold p-2 border-b border-slate-400 bg-gray-100 text-slate-700 " +
   "flex justify-between items-center";
 
-const ViewerHeader = () => {
+const ViewerHeader = (props: { onExpand: () => void }) => {
   return (
     <div className={headerClassName}>
-      <span>Reader View</span> <Button text="Expand" icon={<Expand />} />
+      <span>Reader View</span>{" "}
+      <Button text="Expand" icon={<FullScreenMax />} onClick={props.onExpand} />
     </div>
   );
 };
@@ -47,9 +47,12 @@ const EditorHeader = (props: { readable: string }) => {
   );
 };
 
-type BodyProps = { article: { origin: string; readable: string } };
+type BodyProps = {
+  article: { origin: string; readable: string };
+  onExpandViewer: (markdown: string) => void;
+};
 
-const Body = ({ article }: BodyProps) => {
+const Body = ({ article, onExpandViewer }: BodyProps) => {
   const [localArticle, setLocalArticle] = useState({
     origin: "",
     readable: "",
@@ -65,6 +68,10 @@ const Body = ({ article }: BodyProps) => {
     editorLineSizes.current[lineId] = { top, height };
   };
 
+  const onExpand = () => {
+    onExpandViewer(localArticle.readable);
+  };
+
   useEffect(() => {
     editorLineSizes.current = [];
     setLocalArticle(article);
@@ -72,7 +79,7 @@ const Body = ({ article }: BodyProps) => {
 
   return (
     <ScrollSync
-      viewerHeader={<ViewerHeader />}
+      viewerHeader={<ViewerHeader onExpand={onExpand} />}
       viewer={<MarkdownViewer markdown={localArticle.readable} />}
       editorHeader={<EditorHeader readable={localArticle.readable} />}
       editor={
