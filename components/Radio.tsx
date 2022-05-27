@@ -10,9 +10,9 @@ const Check = ({
   disabled?: boolean;
 }) => {
   const className = classNames({
-    "w-6 fill-sky-500": true,
-    "hover:fill-sky-400": !disabled,
-    "fill-sky-700": disabled,
+    "w-6 fill-orange-500": true,
+    "hover:fill-orange-400": !disabled,
+    "fill-orange-700": disabled,
   });
   return checked ? (
     <svg

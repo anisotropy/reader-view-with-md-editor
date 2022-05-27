@@ -44,13 +44,12 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
     }
   };
 
-  const inputClassName = [
-    "flex-1 p-1",
-    "border border-sky-500 outline-none rounded",
-    "placeholder:text-slate-300, placeholder:italic",
-    "disabled:border-slate-300 disabled:text-slate-300 disabled:bg-transparent",
-    "focus:bg-sky-50",
-  ];
+  const inputClassName =
+    "flex-1 p-1 " +
+    "border border-orange-500 outline-none rounded " +
+    "placeholder:text-slate-300, placeholder:italic " +
+    "disabled:border-slate-300 disabled:text-slate-300 disabled:bg-transparent " +
+    "focus:bg-orange-50 ";
 
   return (
     <Backdrop>
@@ -74,7 +73,7 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
               })}
               autoComplete="off"
               placeholder="URL"
-              className={classNames(...inputClassName)} // TODO: 수정필요
+              className={inputClassName}
             />
           </div>
           <div className="flex">
@@ -90,7 +89,7 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
                 disabled: source !== "html" || isProcessing,
               })}
               placeholder="Write HTML code"
-              className={classNames(...inputClassName, "resize-none h-36")}
+              className={classNames(inputClassName, "resize-none h-36")}
             />
           </div>
           <div className="flex space-x-4">
@@ -99,10 +98,16 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
                 <Button
                   text="Processing..."
                   icon={<Clock className="animate-spin" />}
+                  color="orange"
                   disabled
                 />
               ) : (
-                <Button submit icon={<Check />} text="Use Reader Mode" />
+                <Button
+                  submit
+                  icon={<Check />}
+                  text="Use Reader Mode"
+                  color="orange"
+                />
               ))}
             <Button
               color="slate"
