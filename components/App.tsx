@@ -24,7 +24,7 @@ const App = () => {
     setShowInput(false);
   };
 
-  const onShowInput = () => {
+  const onOpenInput = () => {
     setShowInput(true);
   };
 
@@ -48,11 +48,12 @@ const App = () => {
           hidden: markdown !== null,
         })}
       >
-        <div className="w-full">
-          <Button text="Webpage" onClick={onShowInput} />
-        </div>
         <div className="flex-1 p-4 w-full max-w-7xl overflow-hidden">
-          <Body article={article} onExpandViewer={onExpandViewer} />
+          <Body
+            article={article}
+            onExpandViewer={onExpandViewer}
+            onOpenInput={onOpenInput}
+          />
         </div>
       </div>
       {showInput && (

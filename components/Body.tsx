@@ -8,6 +8,7 @@ import ScrollSync from "./ScrollSync";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import CheckMark from "./icons/CheckMark";
 import FullScreenMax from "./icons/FullScreenMax";
+import DocOnePage from "./icons/DocOnePage";
 
 const headerClassName =
   "font-bold p-2 border-b border-slate-400 bg-gray-100 text-slate-700 " +
@@ -22,7 +23,7 @@ const ViewerHeader = (props: { onExpand: () => void }) => {
   );
 };
 
-const EditorHeader = (props: { readable: string }) => {
+const EditorHeader = (props: { readable: string; onOpenInput: () => void }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const onCopy = () => {
@@ -36,13 +37,21 @@ const EditorHeader = (props: { readable: string }) => {
   return (
     <div className={classNames(headerClassName)}>
       <span>Markdown Editor</span>
-      <CopyToClipboard text={props.readable} onCopy={onCopy}>
+      <div className="flex space-x-2">
         <Button
-          text={isCopied ? "Copied" : "Copy"}
-          icon={isCopied ? <CheckMark /> : <Copy />}
-          color={isCopied ? "slate" : "blue"}
+          text="Webpage"
+          color="orange"
+          icon={<DocOnePage />}
+          onClick={props.onOpenInput}
         />
-      </CopyToClipboard>
+        <CopyToClipboard text={props.readable} onCopy={onCopy}>
+          <Button
+            text={isCopied ? "Copied" : "Copy"}
+            icon={isCopied ? <CheckMark /> : <Copy />}
+            color={isCopied ? "slate" : "blue"}
+          />
+        </CopyToClipboard>
+      </div>
     </div>
   );
 };
@@ -50,9 +59,10 @@ const EditorHeader = (props: { readable: string }) => {
 type BodyProps = {
   article: { origin: string; readable: string };
   onExpandViewer: (markdown: string) => void;
+  onOpenInput: () => void;
 };
 
-const Body = ({ article, onExpandViewer }: BodyProps) => {
+const Body = ({ article, onExpandViewer, onOpenInput }: BodyProps) => {
   const [localArticle, setLocalArticle] = useState({
     origin: "",
     readable: "",
@@ -81,7 +91,12 @@ const Body = ({ article, onExpandViewer }: BodyProps) => {
     <ScrollSync
       viewerHeader={<ViewerHeader onExpand={onExpand} />}
       viewer={<MarkdownViewer markdown={localArticle.readable} />}
-      editorHeader={<EditorHeader readable={localArticle.readable} />}
+      editorHeader={
+        <EditorHeader
+          readable={localArticle.readable}
+          onOpenInput={onOpenInput}
+        />
+      }
       editor={
         <DiffChecker
           oldDoc={localArticle.origin}
