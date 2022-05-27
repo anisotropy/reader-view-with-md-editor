@@ -3,6 +3,7 @@ import Button from "./Button";
 import Radio from "./Radio";
 import webClip from "apis/webClip";
 import classNames from "classnames";
+import Backdrop from "./Backdrop";
 
 type FormInput = {
   source: "url" | "html";
@@ -45,33 +46,47 @@ const InputArticle = ({ onChangeArticle }: InputArticleProps) => {
   ];
 
   return (
-    <div className="flex justify-center">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-2/4 p-4 space-y-2 text-sm text-sky-700"
-      >
-        <div className="flex space-x-2">
-          <Radio {...register("source")} value="url" selectedValue={source} />
-          <input
-            {...register("url", { disabled: source !== "url" })}
-            placeholder="Write a web page address"
-            className={classNames(...inputClassName)}
-          />
-        </div>
-        <div className="flex space-x-2">
-          <Radio {...register("source")} value="html" selectedValue={source} />
-          <textarea
-            {...register("html", { disabled: source !== "html" })}
-            placeholder="Write an HTML document"
-            className={classNames(...inputClassName, "resize-none h-36")}
-          />
-        </div>
-        <div className="flex space-x-2 ml-8">
-          {showSubmitButton && <Button submit text="Use Reader Mode" />}
-          <Button color="slate" text="Cancel" />
-        </div>
-      </form>
-    </div>
+    <Backdrop>
+      <div className="w-full p-4 max-w-2xl bg-white text-slate-700 rounded-md">
+        <h1 className="text-lg font-bold">Webpage</h1>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="mt-4 w-full space-y-4 text-sm"
+        >
+          <div className="flex">
+            <Radio
+              {...register("source")}
+              value="url"
+              selectedValue={source}
+              className="w-8"
+            />
+            <input
+              {...register("url", { disabled: source !== "url" })}
+              autoComplete="off"
+              placeholder="URL"
+              className={classNames(...inputClassName)}
+            />
+          </div>
+          <div className="flex">
+            <Radio
+              {...register("source")}
+              value="html"
+              selectedValue={source}
+              className="w-8"
+            />
+            <textarea
+              {...register("html", { disabled: source !== "html" })}
+              placeholder="Write HTML code"
+              className={classNames(...inputClassName, "resize-none h-36")}
+            />
+          </div>
+          <div className="flex space-x-4">
+            {showSubmitButton && <Button submit text="Use Reader Mode" />}
+            <Button color="slate" text="Cancel" />
+          </div>
+        </form>
+      </div>
+    </Backdrop>
   );
 };
 
