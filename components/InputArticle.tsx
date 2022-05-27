@@ -6,6 +6,8 @@ import classNames from "classnames";
 import Backdrop from "./Backdrop";
 import Clock from "./icons/Clock";
 import { useState } from "react";
+import Check from "./icons/Check";
+import Dismiss from "./icons/Dismiss";
 
 type FormInput = {
   source: "url" | "html";
@@ -100,10 +102,11 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
                   disabled
                 />
               ) : (
-                <Button submit text="Use Reader Mode" />
+                <Button submit icon={<Check />} text="Use Reader Mode" />
               ))}
             <Button
               color="slate"
+              icon={<Dismiss />}
               text="Cancel"
               onClick={onClose}
               disabled={isProcessing}
