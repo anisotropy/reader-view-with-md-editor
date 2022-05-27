@@ -6,6 +6,9 @@ import Copy from "./icons/Copy";
 import Expand from "./icons/Expand";
 import MarkdownViewer from "./MarkdownViewer";
 import ScrollSync from "./ScrollSync";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import Check from "./icons/Check";
+import CheckMark from "./icons/CheckMark";
 
 const headerClassName =
   "font-bold p-2 border-b border-slate-400 bg-gray-100 text-slate-700 " +
@@ -19,10 +22,27 @@ const ViewerHeader = () => {
   );
 };
 
-const EditorHeader = () => {
+const EditorHeader = (props: { readable: string }) => {
+  const [isCopied, setIsCopied] = useState(false);
+
+  const onCopy = () => {
+    setIsCopied(true);
+  };
+
+  useEffect(() => {
+    setIsCopied(false);
+  }, [props.readable]);
+
   return (
     <div className={classNames(headerClassName)}>
-      <span>Markdown Editor</span> <Button text="Copy" icon={<Copy />} />
+      <span>Markdown Editor</span>
+      <CopyToClipboard text={props.readable} onCopy={onCopy}>
+        <Button
+          text={isCopied ? "Copied" : "Copy"}
+          icon={isCopied ? <CheckMark /> : <Copy />}
+          color={isCopied ? "slate" : "blue"}
+        />
+      </CopyToClipboard>
     </div>
   );
 };
@@ -54,7 +74,7 @@ const Body = ({ article }: BodyProps) => {
     <ScrollSync
       viewerHeader={<ViewerHeader />}
       viewer={<MarkdownViewer markdown={localArticle.readable} />}
-      editorHeader={<EditorHeader />}
+      editorHeader={<EditorHeader readable={localArticle.readable} />}
       editor={
         <DiffChecker
           oldDoc={localArticle.origin}
