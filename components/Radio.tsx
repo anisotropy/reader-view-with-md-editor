@@ -1,8 +1,19 @@
+import classNames from "classnames";
 import React, { InputHTMLAttributes } from "react";
 import { UseFormRegister } from "react-hook-form";
 
-const Check = ({ checked }: { checked: boolean | undefined }) => {
-  const className = "w-6 fill-sky-500 hover:fill-sky-400";
+const Check = ({
+  checked,
+  disabled,
+}: {
+  checked: boolean | undefined;
+  disabled?: boolean;
+}) => {
+  const className = classNames({
+    "w-6 fill-sky-500": true,
+    "hover:fill-sky-400": !disabled,
+    "fill-sky-700": disabled,
+  });
   return checked ? (
     <svg
       className={className}
@@ -32,11 +43,15 @@ const Radio = React.forwardRef<
   const checked = selectedValue === value;
   return (
     <label
-      className={`${className || ""} inline-block cursor-pointer`}
+      className={classNames({
+        "inline-block": true,
+        "cursor-pointer": !restProps.disabled,
+        [className || ""]: Boolean(className),
+      })}
       role="radio"
       aria-checked={checked}
     >
-      <Check checked={checked} />
+      <Check checked={checked} disabled={restProps.disabled} />
       <input
         {...restProps}
         ref={ref}

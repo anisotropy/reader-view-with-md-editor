@@ -4,6 +4,8 @@ import Radio from "./Radio";
 import webClip from "apis/webClip";
 import classNames from "classnames";
 import Backdrop from "./Backdrop";
+import Clock from "./icons/Clock";
+import { useState } from "react";
 
 type FormInput = {
   source: "url" | "html";
@@ -13,9 +15,11 @@ type FormInput = {
 
 type InputArticleProps = {
   onChangeArticle: (article: { origin: string; readable: string }) => void;
+  onClose: () => void;
 };
 
-const InputArticle = ({ onChangeArticle }: InputArticleProps) => {
+const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
+  const [isProcessing, setIsProcessing] = useState(false);
   const { register, control, handleSubmit } = useForm<FormInput>({
     defaultValues: { source: "url", url: "", html: "" },
   });
@@ -30,8 +34,10 @@ const InputArticle = ({ onChangeArticle }: InputArticleProps) => {
   const onSubmit: SubmitHandler<FormInput> = async ({ url, html }) => {
     if (!showSubmitButton) return;
     if (url || html) {
+      setIsProcessing(true);
       const res = await webClip({ url, html });
       onChangeArticle(res);
+      onClose();
     } else {
       // TODO: url과 html 모두 없을 때 경고 메시지 표시
     }
@@ -59,9 +65,12 @@ const InputArticle = ({ onChangeArticle }: InputArticleProps) => {
               value="url"
               selectedValue={source}
               className="w-8"
+              disabled={isProcessing}
             />
             <input
-              {...register("url", { disabled: source !== "url" })}
+              {...register("url", {
+                disabled: source !== "url" || isProcessing,
+              })}
               autoComplete="off"
               placeholder="URL"
               className={classNames(...inputClassName)}
@@ -73,16 +82,33 @@ const InputArticle = ({ onChangeArticle }: InputArticleProps) => {
               value="html"
               selectedValue={source}
               className="w-8"
+              disabled={isProcessing}
             />
             <textarea
-              {...register("html", { disabled: source !== "html" })}
+              {...register("html", {
+                disabled: source !== "html" || isProcessing,
+              })}
               placeholder="Write HTML code"
               className={classNames(...inputClassName, "resize-none h-36")}
             />
           </div>
           <div className="flex space-x-4">
-            {showSubmitButton && <Button submit text="Use Reader Mode" />}
-            <Button color="slate" text="Cancel" />
+            {showSubmitButton &&
+              (isProcessing ? (
+                <Button
+                  text="Processing..."
+                  icon={<Clock className="animate-spin" />}
+                  disabled
+                />
+              ) : (
+                <Button submit text="Use Reader Mode" />
+              ))}
+            <Button
+              color="slate"
+              text="Cancel"
+              onClick={onClose}
+              disabled={isProcessing}
+            />
           </div>
         </form>
       </div>
