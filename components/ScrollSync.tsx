@@ -5,10 +5,18 @@ import { throttle } from "lodash";
 type ScrollSyncProps = {
   viewer: React.ReactNode;
   editor: React.ReactNode;
+  viewerHeader: React.ReactNode;
+  editorHeader: React.ReactNode;
   editorLineSizes: { top: number; height: number }[];
 };
 
-const ScrollSync = ({ viewer, editor, editorLineSizes }: ScrollSyncProps) => {
+const ScrollSync = ({
+  viewer,
+  editor,
+  viewerHeader,
+  editorHeader,
+  editorLineSizes,
+}: ScrollSyncProps) => {
   const editorEl = useRef<HTMLDivElement>(null);
   const viewerEl = useRef<HTMLDivElement>(null);
   const [scrollSide, setScrollSide] = useState<"viewer" | "editor" | null>(
@@ -117,30 +125,39 @@ const ScrollSync = ({ viewer, editor, editorLineSizes }: ScrollSyncProps) => {
   return (
     <div className="w-full h-full grid grid-rows-2 md:grid-rows-1 md:grid-cols-2">
       <div
-        ref={viewerEl}
         className={classNames(
-          "overflow-y-scroll",
-          "border-slate-400",
-          "border border-b-0 rounded-t-lg",
-          "md:border md:rounded-none md:border-r-0 md:rounded-l-lg p-2"
+          "flex flex-col overflow-hidden",
+          "border border-slate-400 border-b-0 rounded-t-lg",
+          "md:border md:rounded-none md:border-r-0 md:rounded-l-lg"
         )}
-        onScroll={onViewerScroll}
-        onMouseMove={onViwerMouseMove}
       >
-        {viewer}
+        {viewerHeader}
+        <div
+          ref={viewerEl}
+          className="flex-1 overflow-y-scroll  p-2"
+          onScroll={onViewerScroll}
+          onMouseMove={onViwerMouseMove}
+        >
+          {viewer}
+        </div>
       </div>
       <div
-        role="table"
-        ref={editorEl}
         className={classNames(
-          "overflow-y-scroll",
+          "flex flex-col overflow-hidden",
           "border border-slate-400",
           "rounded-b-lg md:rounded-none md:rounded-r-lg"
         )}
-        onScroll={onEditorScroll}
-        onMouseMove={onEditorMouseMove}
       >
-        {editor}
+        {editorHeader}
+        <div
+          role="table"
+          ref={editorEl}
+          className="flex-1 overflow-y-scroll"
+          onScroll={onEditorScroll}
+          onMouseMove={onEditorMouseMove}
+        >
+          {editor}
+        </div>
       </div>
     </div>
   );

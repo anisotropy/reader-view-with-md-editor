@@ -74,7 +74,7 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
               })}
               autoComplete="off"
               placeholder="URL"
-              className={classNames(...inputClassName)}
+              className={classNames(...inputClassName)} // TODO: 수정필요
             />
           </div>
           <div className="flex">
