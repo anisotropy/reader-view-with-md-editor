@@ -5,8 +5,8 @@ import FullScreenViewer from "./icons/FullScreenViewer";
 import InputArticle from "./InputArticle";
 
 const introduction = {
-  origin: `# Reader View with Markdown Editor\n\nYou can strip clutters from a webpage and read it on **Reader View** mode by Mozilla's open-source Readability.\nIf necessary contents are removed, you can compare the striped webpage and the original one, and edit it in **Markdown editor**.\n\n1. Click **Webpage** button and put a webpage address or HTML code.`,
-  readable: `# Reader View with Markdown Editor\n\nYou can strip clutters from a webpage and read it on **Reader View** mode.\nIf necessary contents are removed, you can compare the striped webpage and the original one, and edit it in **Markdown editor**.\n\n1. Click **Webpage** button and put a webpage address or HTML code.\n1. Click a line in **Markdown Editor**, and add, remove or edit the line.`,
+  origin: `# Reader View with Markdown Editor\n\nYou can strip clutters from a webpage and read it on **Reader View** mode by Mozilla's open-source Readability.\nIf necessary contents are removed, you can compare the striped webpage and the original one, and edit it in **Markdown editor**.\n\n1. Click **Webpage** button and put a webpage address or HTML code.\n1. Click a line in **Markdown Editor**, and add, remove or edit the line.`,
+  readable: `# Reader View with Markdown Editor\n\nYou can strip clutters from a webpage and read it on **Reader View** mode.\nIf necessary contents are removed, you can compare the striped webpage and the original one, and edit it in **Markdown editor**.\n\n1. Click **Webpage** button and put a webpage address or HTML code.\n1. Click a line in **Markdown Editor**, and add, remove or edit the line.\n\nVisit [Github](https://github.com/anisotropy/reader-view-with-md-editor) for more details.`,
 };
 
 const App = () => {
