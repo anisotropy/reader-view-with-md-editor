@@ -88,7 +88,7 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
               {...register("html", {
                 disabled: source !== "html" || isProcessing,
               })}
-              placeholder="Write HTML code"
+              placeholder="Put HTML code"
               className={classNames(inputClassName, "resize-none h-36")}
             />
           </div>
