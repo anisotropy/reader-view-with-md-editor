@@ -1,14 +1,17 @@
 import classNames from "classnames";
+import FullScreenMax from "./icons/FullScreenMax";
 
 type ButtonProps = {
   text: string;
   submit?: boolean;
   color?: "blue" | "green" | "red" | "slate" | "orange" | "black";
   textSize?: "sm";
-  icon?: JSX.Element;
+  Icon?: (props: { className?: string }) => JSX.Element;
   className?: string;
   disabled?: boolean;
   href?: string;
+  border?: boolean;
+  fontBold?: boolean;
   onClick?: () => void;
 };
 
@@ -17,15 +20,16 @@ const Button = ({
   submit,
   color = "blue",
   textSize = "sm",
-  icon,
+  Icon,
   className: extraClassName,
   disabled,
   href,
+  border,
+  fontBold,
   onClick,
 }: ButtonProps) => {
-  const className = classNames({
-    "flex items-center space-x-1": true,
-    "rounded border-0 leading-none text-white outline-offset-2": true,
+  const styleWithoutBorder = {
+    "border-0 text-white": true,
     "bg-sky-500 hover:bg-sky-400 outline-sky-400 disabled:bg-sky-700":
       color === "blue",
     "bg-green-500 hover:bg-green-400 outline-green-400 disabled:bg-green-700":
@@ -38,10 +42,27 @@ const Button = ({
       color === "orange",
     "bg-slate-900 hover:bg-slate-800 outline-slate-800 disabled:bg-black":
       color === "black",
+  };
+
+  const styleWithBorder = {
+    border: true,
+    "border-slate-700 text-slate-700 hover:bg-slate-700/10 disabled:text-slate-400 disabled:bg-transparent":
+      color === "black",
+  };
+
+  const className = classNames({
+    "flex items-center space-x-1": true,
+    "rounded leading-none outline-offset-2": true,
     "text-sm h-8": textSize === "sm",
-    "px-3": textSize === "sm" && !icon,
-    "pl-2 pr-3": textSize === "sm" && icon,
+    "px-3": textSize === "sm" && !Icon,
+    "pl-2 pr-3": textSize === "sm" && Icon,
+    "font-bold": fontBold,
+    ...(border ? styleWithBorder : styleWithoutBorder),
     [extraClassName || ""]: Boolean(extraClassName),
+  });
+
+  const iconClassName = classNames({
+    "fill-slate-700": border,
   });
 
   return href ? (
@@ -52,7 +73,7 @@ const Button = ({
       role="button"
       className={className}
     >
-      {icon}
+      {Icon && <Icon className={iconClassName} />}
       <span>{text}</span>
     </a>
   ) : (
@@ -62,7 +83,7 @@ const Button = ({
       disabled={disabled}
       onClick={onClick}
     >
-      {icon}
+      {Icon && <Icon className={iconClassName} />}
       <span>{text}</span>
     </button>
   );

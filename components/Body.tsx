@@ -18,7 +18,12 @@ const ViewerHeader = (props: { onExpand: () => void }) => {
   return (
     <div className={headerClassName}>
       <span>Reader Mode</span>{" "}
-      <Button text="Expand" icon={<FullScreenMax />} onClick={props.onExpand} />
+      <Button
+        text="Expand"
+        Icon={FullScreenMax}
+        color="black"
+        onClick={props.onExpand}
+      />
     </div>
   );
 };
@@ -40,15 +45,15 @@ const EditorHeader = (props: { readable: string; onOpenInput: () => void }) => {
       <div className="flex space-x-2">
         <Button
           text="Webpage"
-          color="orange"
-          icon={<DocOnePage />}
+          color="black"
+          Icon={DocOnePage}
           onClick={props.onOpenInput}
         />
         <CopyToClipboard text={props.readable} onCopy={onCopy}>
           <Button
             text={isCopied ? "Copied" : "Copy"}
-            icon={isCopied ? <CheckMark /> : <Copy />}
-            color={isCopied ? "slate" : "blue"}
+            Icon={isCopied ? CheckMark : Copy}
+            color={isCopied ? "slate" : "black"}
           />
         </CopyToClipboard>
       </div>

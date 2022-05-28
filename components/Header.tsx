@@ -18,12 +18,7 @@ const Header = () => {
   return isShirinked ? (
     <div className="flex items-center space-x-4 mb-2 text-slate-700">
       <h1>Reader View Mode with Markdown Editor</h1>
-      <Button
-        text="Expand"
-        icon={<Maximize />}
-        color="black"
-        onClick={onExpand}
-      />
+      <Button text="Expand" Icon={Maximize} color="black" onClick={onExpand} />
     </div>
   ) : (
     <div className="max-w-xl mb-2 text-slate-700">
@@ -48,14 +43,15 @@ const Header = () => {
       <div className="flex mt-2 justify-between">
         <Button
           text="GitHub"
-          icon={<GitHub />}
+          Icon={GitHub}
           color="black"
           href="https://github.com/anisotropy/reader-view-with-md-editor"
         />
         <Button
           text="Shrink"
-          icon={<Minimize />}
+          Icon={Minimize}
           color="black"
+          border
           onClick={onShrink}
         />
       </div>
