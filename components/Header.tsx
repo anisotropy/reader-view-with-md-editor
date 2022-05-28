@@ -17,7 +17,7 @@ const Header = () => {
 
   return isShirinked ? (
     <div className="flex items-center space-x-4 mb-2 text-slate-700">
-      <h1>Reader View with Markdown Editor</h1>
+      <h1>Reader View Mode with Markdown Editor</h1>
       <Button
         text="Expand"
         icon={<Maximize />}
@@ -42,8 +42,8 @@ const Header = () => {
           &quot;Reader View&quot; Chrome extension
         </a>
         . But you can <b>compare</b> the reader mode version and the original
-        one, and edit it in <b>markdown</b> format, if you think too many
-        thinngs are removed.
+        one, and edit it in <b>markdown</b> format, if you think too many things
+        are removed.
       </p>
       <div className="flex mt-2 justify-between">
         <Button
