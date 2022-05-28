@@ -46,7 +46,12 @@ const Header = () => {
         thinngs are removed.
       </p>
       <div className="flex mt-2 justify-between">
-        <Button text="GitHub" icon={<GitHub />} color="black" />
+        <Button
+          text="GitHub"
+          icon={<GitHub />}
+          color="black"
+          href="https://github.com/anisotropy/reader-view-with-md-editor"
+        />
         <Button
           text="Shrink"
           icon={<Minimize />}
