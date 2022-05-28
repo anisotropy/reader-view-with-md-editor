@@ -8,6 +8,7 @@ type ButtonProps = {
   icon?: JSX.Element;
   className?: string;
   disabled?: boolean;
+  href?: string;
   onClick?: () => void;
 };
 
@@ -19,6 +20,7 @@ const Button = ({
   icon,
   className: extraClassName,
   disabled,
+  href,
   onClick,
 }: ButtonProps) => {
   const className = classNames({
@@ -42,7 +44,18 @@ const Button = ({
     [extraClassName || ""]: Boolean(extraClassName),
   });
 
-  return (
+  return href ? (
+    <a
+      target="_blank"
+      rel="noreferrer"
+      href={href}
+      role="button"
+      className={className}
+    >
+      {icon}
+      <span>{text}</span>
+    </a>
+  ) : (
     <button
       type={submit ? "submit" : undefined}
       className={className}
