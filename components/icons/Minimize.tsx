@@ -1,7 +1,7 @@
 export default function Minimize({ className }: { className?: string }) {
   return (
     <svg
-      className={"w-5 fill-white" + (className ? ` ${className}` : "")}
+      className={"w-5 fill-current" + (className ? ` ${className}` : "")}
       fill="none"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"

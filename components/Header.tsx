@@ -45,6 +45,7 @@ const Header = () => {
           text="GitHub"
           Icon={GitHub}
           color="black"
+          border
           href="https://github.com/anisotropy/reader-view-with-md-editor"
         />
         <Button

@@ -46,7 +46,7 @@ const Button = ({
 
   const styleWithBorder = {
     border: true,
-    "border-slate-700 text-slate-700 hover:bg-slate-700/10 disabled:text-slate-400 disabled:bg-transparent":
+    "border-slate-700 text-slate-700 hover:text-orange-700 hover:border-orange-700 disabled:text-slate-400 disabled:bg-transparent":
       color === "black",
   };
 
@@ -61,9 +61,7 @@ const Button = ({
     [extraClassName || ""]: Boolean(extraClassName),
   });
 
-  const iconClassName = classNames({
-    "fill-slate-700": border,
-  });
+  const iconClassName = classNames({});
 
   return href ? (
     <a
