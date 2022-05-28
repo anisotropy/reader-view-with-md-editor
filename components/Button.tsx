@@ -3,7 +3,7 @@ import classNames from "classnames";
 type ButtonProps = {
   text: string;
   submit?: boolean;
-  color?: "blue" | "green" | "red" | "slate" | "orange";
+  color?: "blue" | "green" | "red" | "slate" | "orange" | "black";
   textSize?: "sm";
   icon?: JSX.Element;
   className?: string;
@@ -34,6 +34,8 @@ const Button = ({
       color === "slate",
     "bg-orange-500 hover:bg-orange-400 outline-orange-400 disabled:bg-orange-700":
       color === "orange",
+    "bg-slate-900 hover:bg-slate-800 outline-slate-800 disabled:bg-black":
+      color === "black",
     "text-sm h-8": textSize === "sm",
     "px-3": textSize === "sm" && !icon,
     "pl-2 pr-3": textSize === "sm" && icon,

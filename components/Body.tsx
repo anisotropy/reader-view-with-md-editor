@@ -17,7 +17,7 @@ const headerClassName =
 const ViewerHeader = (props: { onExpand: () => void }) => {
   return (
     <div className={headerClassName}>
-      <span>Reader View</span>{" "}
+      <span>Reader Mode</span>{" "}
       <Button text="Expand" icon={<FullScreenMax />} onClick={props.onExpand} />
     </div>
   );

@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import React, { useState } from "react";
 import Body from "./Body";
+import Header from "./Header";
 import FullScreenViewer from "./icons/FullScreenViewer";
 import InputArticle from "./InputArticle";
 
@@ -43,11 +44,12 @@ const App = () => {
     <>
       <div
         className={classNames({
-          "flex flex-col items-center h-screen": true,
+          "flex flex-col items-center h-screen p-4": true,
           hidden: markdown !== null,
         })}
       >
-        <div className="flex-1 p-4 w-full max-w-7xl overflow-hidden">
+        <Header />
+        <div className="flex-1 w-full max-w-7xl overflow-hidden">
           <Body
             article={article}
             onExpandViewer={onExpandViewer}
