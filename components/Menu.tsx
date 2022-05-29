@@ -24,7 +24,13 @@ const Menu = ({ buttons, onAdd, onRemove, onEdit, onClose }: MenuProps) => {
       {buttons.edit && (
         <Button color="black" onClick={onEdit} Icon={Edit} text="Edit" />
       )}
-      <Button color="black" onClick={onClose} Icon={Dismiss} text="Close" />
+      <Button
+        border
+        color="black"
+        onClick={onClose}
+        Icon={Dismiss}
+        text="Close"
+      />
     </div>
   );
 };

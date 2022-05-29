@@ -30,29 +30,22 @@ const Button = ({
 }: ButtonProps) => {
   const styleWithoutBorder = {
     "border-0 text-white": true,
-    "bg-sky-500 hover:bg-sky-400 outline-sky-400 disabled:bg-sky-700":
-      color === "blue",
-    "bg-green-500 hover:bg-green-400 outline-green-400 disabled:bg-green-700":
-      color === "green",
-    "bg-red-500 hover:bg-red-400 outline-red-400 disabled:bg-red-700":
-      color === "red",
-    "bg-slate-500 hover:bg-slate-400 outline-slate-400 disabled:bg-slate-700":
-      color === "slate",
-    "bg-orange-500 hover:bg-orange-400 outline-orange-400 disabled:bg-orange-700":
-      color === "orange",
-    "bg-slate-900 hover:bg-slate-800 outline-slate-800 disabled:bg-black":
-      color === "black",
+    "bg-sky-700 outline-sky-700 disabled:bg-slate-500": color === "blue",
+    "bg-slate-900 outline-slate-900 disabled:bg-slate-500": color === "black",
   };
 
   const styleWithBorder = {
     border: true,
-    "border-slate-700 text-slate-700 hover:text-orange-700 hover:border-orange-700 disabled:text-slate-400 disabled:bg-transparent":
+    "bg-white border-slate-700 text-slate-700 outline-slate-700 disabled:text-slate-400":
       color === "black",
+    "bg-white border-red-900 text-red-900 outline-slate-900 disabled:text-slate-400":
+      color === "red",
   };
 
   const className = classNames({
     "flex items-center space-x-1": true,
     "rounded leading-none outline-offset-2": true,
+    "relative hover:drop-shadow hover:-top-px hover:-left-px": true,
     "text-sm h-8": textSize === "sm",
     "px-3": textSize === "sm" && !Icon,
     "pl-2 pr-3": textSize === "sm" && Icon,

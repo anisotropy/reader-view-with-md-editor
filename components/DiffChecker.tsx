@@ -126,10 +126,9 @@ const DiffRow = ({
     >
       <div
         className={classNames({
-          "absolute top-0 left-0 h-full w-2": true,
-          "group-hover:bg-slate-900": line.sign === null,
-          "group-hover:bg-red-900": line.sign === "-",
-          "group-hover:bg-green-900": line.sign === "+",
+          "absolute top-0 left-0 h-full w-2 ": true,
+          "group-hover:bg-slate-900": !isEditing,
+          "group-hover:bg-sky-800": isEditing,
         })}
       ></div>
       <div role="cell" className="w-8 whitespace-pre-wrap text-center shrink-0">

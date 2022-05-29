@@ -45,15 +45,16 @@ const EditorHeader = (props: { readable: string; onOpenInput: () => void }) => {
       <div className="flex space-x-2">
         <Button
           text="Webpage"
-          color="black"
+          color="blue"
           Icon={DocOnePage}
           onClick={props.onOpenInput}
         />
         <CopyToClipboard text={props.readable} onCopy={onCopy}>
           <Button
+            border={isCopied}
             text={isCopied ? "Copied" : "Copy"}
             Icon={isCopied ? CheckMark : Copy}
-            color={isCopied ? "slate" : "black"}
+            color="black"
           />
         </CopyToClipboard>
       </div>
