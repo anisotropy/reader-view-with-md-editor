@@ -1,7 +1,7 @@
 export default function Edit({ className }: { className?: string }) {
   return (
     <svg
-      className={"w-5 fill-current" + (className ? ` ${className}` : "")}
+      className={className}
       fill="none"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"

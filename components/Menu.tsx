@@ -15,22 +15,12 @@ type MenuProps = {
 const Menu = ({ buttons, onAdd, onRemove, onEdit, onClose }: MenuProps) => {
   return (
     <div className="flex space-x-4 my-2">
-      {buttons.add && (
-        <Button color="black" onClick={onAdd} Icon={Add} text="Add" />
-      )}
+      {buttons.add && <Button onClick={onAdd} Icon={Add} text="Add" />}
       {buttons.remove && (
-        <Button color="black" onClick={onRemove} Icon={Remove} text="Remove" />
+        <Button onClick={onRemove} Icon={Remove} text="Remove" />
       )}
-      {buttons.edit && (
-        <Button color="black" onClick={onEdit} Icon={Edit} text="Edit" />
-      )}
-      <Button
-        border
-        color="black"
-        onClick={onClose}
-        Icon={Dismiss}
-        text="Close"
-      />
+      {buttons.edit && <Button onClick={onEdit} Icon={Edit} text="Edit" />}
+      <Button border onClick={onClose} Icon={Dismiss} text="Close" />
     </div>
   );
 };

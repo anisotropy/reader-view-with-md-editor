@@ -12,13 +12,14 @@ type ButtonProps = {
   href?: string;
   border?: boolean;
   fontBold?: boolean;
+  iconSpin?: boolean;
   onClick?: () => void;
 };
 
 const Button = ({
   text,
   submit,
-  color = "blue",
+  color = "black",
   textSize = "sm",
   Icon,
   className: extraClassName,
@@ -26,6 +27,7 @@ const Button = ({
   href,
   border,
   fontBold,
+  iconSpin,
   onClick,
 }: ButtonProps) => {
   const styleWithoutBorder = {
@@ -54,7 +56,11 @@ const Button = ({
     [extraClassName || ""]: Boolean(extraClassName),
   });
 
-  const iconClassName = classNames({});
+  const iconClassName = classNames({
+    "fill-current": true,
+    "w-5": textSize === "sm",
+    "animate-spin": iconSpin,
+  });
 
   return href ? (
     <a

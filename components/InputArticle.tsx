@@ -5,9 +5,10 @@ import webClip from "apis/webClip";
 import classNames from "classnames";
 import Backdrop from "./Backdrop";
 import Clock from "./icons/Clock";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Check from "./icons/Check";
 import Dismiss from "./icons/Dismiss";
+import DocOnePage from "./icons/DocOnePage";
 
 type FormInput = {
   source: "url" | "html";
@@ -22,7 +23,7 @@ type InputArticleProps = {
 
 const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const { register, control, handleSubmit } = useForm<FormInput>({
+  const { register, control, handleSubmit, setFocus } = useForm<FormInput>({
     defaultValues: { source: "url", url: "", html: "" },
   });
 
@@ -44,17 +45,23 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
     }
   };
 
+  useEffect(() => {
+    setFocus(source);
+  }, [setFocus, source]);
+
   const inputClassName =
     "flex-1 p-1 " +
-    "border border-orange-500 outline-none rounded " +
-    "placeholder:text-slate-300, placeholder:italic " +
-    "disabled:border-slate-300 disabled:text-slate-300 disabled:bg-transparent " +
-    "focus:bg-orange-50 ";
+    "border border-transparent outline-none " +
+    "placeholder:text-slate-400" +
+    "disabled:border-slate-400 disabled:text-slate-400 disabled:bg-transparent " +
+    "focus:border-slate-700";
 
   return (
     <Backdrop>
       <div className="w-full p-4 max-w-2xl bg-white text-slate-700 rounded-md">
-        <h1 className="text-lg font-bold">Webpage</h1>
+        <h1 className="flex text-lg items-center space-x-1">
+          <DocOnePage className="w-6 fill-current" /> <span>Webpage</span>
+        </h1>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="mt-4 w-full space-y-4 text-sm"
@@ -95,23 +102,13 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
           <div className="flex space-x-4">
             {showSubmitButton &&
               (isProcessing ? (
-                <Button
-                  text="Processing..."
-                  icon={<Clock className="animate-spin" />}
-                  color="orange"
-                  disabled
-                />
+                <Button text="Processing..." Icon={Clock} iconSpin disabled />
               ) : (
-                <Button
-                  submit
-                  icon={<Check />}
-                  text="Use Reader Mode"
-                  color="orange"
-                />
+                <Button submit Icon={Check} text="Use Reader Mode" />
               ))}
             <Button
-              color="slate"
-              icon={<Dismiss />}
+              border
+              Icon={Dismiss}
               text="Cancel"
               onClick={onClose}
               disabled={isProcessing}
