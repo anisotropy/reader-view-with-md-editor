@@ -15,16 +15,16 @@ const Header = () => {
     setIsShirinked(false);
   };
 
+  const title = "Reader Mode View with Markdown Editor";
+
   return isShirinked ? (
     <div className="flex items-center space-x-4 mb-2 text-slate-700">
-      <h1>Reader View Mode with Markdown Editor</h1>
+      <h1>{title}</h1>
       <Button text="Expand" Icon={Maximize} border onClick={onExpand} />
     </div>
   ) : (
     <div className="max-w-xl mb-2 text-slate-700">
-      <h1 className="text-center text-2xl font-bold">
-        Reader View with Markdown Editor
-      </h1>
+      <h1 className="text-center text-2xl font-bold">{title}</h1>
       <p className="mt-2">
         Get rid of annoying ads or pop-ups on a webpage and read it on{" "}
         <b>reader mode</b> like{" "}
