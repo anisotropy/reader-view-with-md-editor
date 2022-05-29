@@ -31,17 +31,15 @@ const Button = ({
   onClick,
 }: ButtonProps) => {
   const styleWithoutBorder = {
-    "border-0 text-white": true,
-    "bg-sky-700 outline-sky-700 disabled:bg-slate-500": color === "blue",
-    "bg-slate-900 outline-slate-900 disabled:bg-slate-500": color === "black",
+    "border-0 text-white disabled:bg-slate-400": true,
+    "bg-sky-700 outline-sky-700": color === "blue",
+    "bg-slate-900 outline-slate-900": color === "black",
   };
 
   const styleWithBorder = {
-    border: true,
-    "bg-white border-slate-700 text-slate-700 outline-slate-700 disabled:text-slate-400":
-      color === "black",
-    "bg-white border-red-900 text-red-900 outline-slate-900 disabled:text-slate-400":
-      color === "red",
+    "border bg-white disabled:border-slate-400 disabled:text-slate-400": true,
+    "border-slate-700 text-slate-700 outline-slate-700": color === "black",
+    "border-red-900 text-red-900 outline-red-900": color === "red",
   };
 
   const className = classNames({
