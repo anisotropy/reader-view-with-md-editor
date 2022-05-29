@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React, { useState } from "react";
 import Body from "./Body";
 import Header from "./Header";
-import FullScreenViewer from "./icons/FullScreenViewer";
+import FullScreenViewer from "./FullScreenViewer";
 import InputArticle from "./InputArticle";
 
 const introduction = {
