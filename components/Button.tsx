@@ -43,9 +43,9 @@ const Button = ({
   };
 
   const className = classNames({
-    "flex items-center space-x-1": true,
+    "relative flex items-center space-x-1": true,
     "rounded leading-none outline-offset-2": true,
-    "relative hover:drop-shadow hover:-top-px hover:-left-px": true,
+    "hover:drop-shadow hover:-top-px hover:-left-px": !disabled,
     "text-sm h-8": textSize === "sm",
     "px-3": textSize === "sm" && !Icon,
     "pl-2 pr-3": textSize === "sm" && Icon,
