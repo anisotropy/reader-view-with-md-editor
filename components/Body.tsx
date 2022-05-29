@@ -66,15 +66,18 @@ const Body = ({ article, onExpandViewer, onOpenInput }: BodyProps) => {
     origin: "",
     readable: "",
   });
-  const editorLineSizes = useRef<{ top: number; height: number }[]>([]);
+  const editorLineEls = useRef<React.RefObject<HTMLDivElement>[]>([]);
 
   const onChangeArticle = (readable: string) => {
-    editorLineSizes.current = [];
+    editorLineEls.current = [];
     setLocalArticle({ ...localArticle, readable });
   };
 
-  const onChangeLineSize = (lineId: number, top: number, height: number) => {
-    editorLineSizes.current[lineId] = { top, height };
+  const onMountLineEl = (
+    index: number,
+    element: React.RefObject<HTMLDivElement>
+  ) => {
+    editorLineEls.current[index] = element;
   };
 
   const onExpand = () => {
@@ -82,7 +85,7 @@ const Body = ({ article, onExpandViewer, onOpenInput }: BodyProps) => {
   };
 
   useEffect(() => {
-    editorLineSizes.current = [];
+    editorLineEls.current = [];
     setLocalArticle(article);
   }, [article]);
 
@@ -101,10 +104,10 @@ const Body = ({ article, onExpandViewer, onOpenInput }: BodyProps) => {
           oldDoc={localArticle.origin}
           newDoc={localArticle.readable}
           onChangeArticle={onChangeArticle}
-          onChangeLineSize={onChangeLineSize}
+          onMountLineEl={onMountLineEl}
         />
       }
-      editorLineSizes={editorLineSizes.current}
+      editorLineEls={editorLineEls.current}
     />
   );
 };

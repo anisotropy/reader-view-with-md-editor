@@ -9,7 +9,13 @@ import makeDiff, {
 } from "utils/makeDiff";
 import classNames from "classnames";
 import MdEditor from "./MdEditor";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Menu from "./Menu";
 import useResize from "hooks/useResize";
 
@@ -69,7 +75,7 @@ type DiffRowProps = {
   onEdit: (lineId: number) => void;
   onUpdate: (lineId: number, markdown: string) => void;
   onCancel: () => void;
-  onChangeSize: (line: SingleLine, element: HTMLDivElement) => void;
+  onMount: (line: SingleLine, element: React.RefObject<HTMLDivElement>) => void;
 };
 
 const DiffRow = ({
@@ -83,7 +89,7 @@ const DiffRow = ({
   onEdit,
   onUpdate,
   onCancel,
-  onChangeSize,
+  onMount,
 }: DiffRowProps) => {
   const element = useRef<HTMLDivElement>(null);
 
@@ -101,17 +107,9 @@ const DiffRow = ({
     if (!showMenu && !isEditing) onShowMenu(line.id);
   };
 
-  useResize(
-    element,
-    useCallback(
-      ({ offsetHeight, offsetTop }) => {
-        if (element?.current && (offsetTop || offsetHeight)) {
-          onChangeSize(line, element.current);
-        }
-      },
-      [line, onChangeSize]
-    )
-  );
+  useEffect(() => {
+    if (element) onMount(line, element);
+  }, [line, element, onMount]);
 
   return (
     <div
@@ -161,14 +159,17 @@ type DiffCheckerProps = {
   oldDoc: string;
   newDoc: string;
   onChangeArticle: (readableArticle: string) => void;
-  onChangeLineSize: (lineId: number, top: number, heighr: number) => void;
+  onMountLineEl: (
+    index: number,
+    element: React.RefObject<HTMLDivElement>
+  ) => void;
 };
 
 const DiffChecker = ({
   oldDoc,
   newDoc,
   onChangeArticle,
-  onChangeLineSize,
+  onMountLineEl,
 }: DiffCheckerProps) => {
   const [theLineId, setTheLineId] = useState<number | null>(null);
   const [lineIdToEdit, setLineIdToEdit] = useState<number | null>(null);
@@ -224,16 +225,12 @@ const DiffChecker = ({
     setLineIdToEdit(null);
   }, []);
 
-  const onChangeSize = useCallback(
-    (line: SingleLine, element: HTMLDivElement) => {
+  const onMount = useCallback(
+    (line: SingleLine, element: React.RefObject<HTMLDivElement>) => {
       if (!line.showRightNumber) return;
-      onChangeLineSize(
-        line.rightNumber - 1,
-        element.offsetTop,
-        element.offsetHeight
-      );
+      onMountLineEl(line.rightNumber - 1, element);
     },
-    [onChangeLineSize]
+    [onMountLineEl]
   );
 
   if (!oldDoc && !newDoc) return null;
@@ -252,7 +249,7 @@ const DiffChecker = ({
           onEdit={onEdit}
           onUpdate={onUpdate}
           onCancel={onCancel}
-          onChangeSize={onChangeSize}
+          onMount={onMount}
         />
       ))}
     </div>

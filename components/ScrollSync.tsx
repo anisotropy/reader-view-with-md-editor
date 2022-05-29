@@ -7,7 +7,7 @@ type ScrollSyncProps = {
   editor: React.ReactNode;
   viewerHeader: React.ReactNode;
   editorHeader: React.ReactNode;
-  editorLineSizes: { top: number; height: number }[];
+  editorLineEls: React.RefObject<HTMLDivElement>[];
 };
 
 const ScrollSync = ({
@@ -15,7 +15,7 @@ const ScrollSync = ({
   editor,
   viewerHeader,
   editorHeader,
-  editorLineSizes,
+  editorLineEls,
 }: ScrollSyncProps) => {
   const editorEl = useRef<HTMLDivElement>(null);
   const viewerEl = useRef<HTMLDivElement>(null);
@@ -31,8 +31,8 @@ const ScrollSync = ({
         viewerScrollTop /
         (viewerEl.current.scrollHeight - viewerEl.current.clientHeight);
 
-      const partialScrollHeight = editorLineSizes.reduce(
-        (sum, lineSize) => (lineSize ? sum + lineSize.height : sum),
+      const partialScrollHeight = editorLineEls.reduce(
+        (sum, el) => (el.current ? sum + el.current.offsetHeight : sum),
         0
       );
 
@@ -40,12 +40,12 @@ const ScrollSync = ({
         (partialScrollHeight - editorEl.current.clientHeight) *
         viewerScrollRatio;
 
-      const { top } = editorLineSizes.reduce(
-        ({ relTop, top }, lineSize) => {
-          if (!lineSize) return { relTop, top };
-          const nextRelTop = relTop + lineSize.height;
+      const { top } = editorLineEls.reduce(
+        ({ relTop, top }, el) => {
+          if (!el.current) return { relTop, top };
+          const nextRelTop = relTop + el.current.offsetHeight;
           if (relTop <= relScrollTop && relScrollTop < nextRelTop) {
-            top = lineSize.top + relScrollTop - relTop;
+            top = el.current.offsetTop + relScrollTop - relTop;
           }
           return { relTop: nextRelTop, top };
         },
@@ -54,7 +54,7 @@ const ScrollSync = ({
 
       editorEl.current.scrollTop = top - editorEl.current.offsetTop;
     },
-    [editorLineSizes]
+    [editorLineEls]
   );
 
   const setThrottledEditorScrollTop = useMemo(
@@ -75,13 +75,16 @@ const ScrollSync = ({
       if (!editorEl?.current || !viewerEl?.current) return;
       const top = editorScrollTop + editorEl.current.offsetTop;
 
-      const { partialScrollHeight, theRelTop } = editorLineSizes.reduce(
-        ({ partialScrollHeight, theRelTop }, lineSize) => {
-          if (!lineSize) return { partialScrollHeight, theRelTop };
-          if (lineSize.top <= top && top < lineSize.top + lineSize.height) {
-            theRelTop = partialScrollHeight + top - lineSize.top;
+      const { partialScrollHeight, theRelTop } = editorLineEls.reduce(
+        ({ partialScrollHeight, theRelTop }, el) => {
+          if (!el.current) return { partialScrollHeight, theRelTop };
+          if (
+            el.current.offsetTop <= top &&
+            top < el.current.offsetTop + el.current.offsetHeight
+          ) {
+            theRelTop = partialScrollHeight + top - el.current.offsetTop;
           }
-          partialScrollHeight += lineSize.height;
+          partialScrollHeight += el.current.offsetHeight;
           return { partialScrollHeight, theRelTop };
         },
         { partialScrollHeight: 0, theRelTop: -1 }
@@ -93,12 +96,13 @@ const ScrollSync = ({
           scrollRatio *
           (viewerEl.current.scrollHeight - viewerEl.current.clientHeight);
       } else if (
-        top <= (editorLineSizes.find((lineSize) => lineSize)?.top || -1)
+        top <=
+        (editorLineEls.find((el) => el.current)?.current?.offsetTop || -1)
       ) {
         viewerEl.current.scrollTop = 0;
       }
     },
-    [editorLineSizes]
+    [editorLineEls]
   );
 
   const setThrottledViewerScrollTop = useMemo(
