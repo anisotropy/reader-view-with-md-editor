@@ -11,7 +11,7 @@ import FullScreenMax from "./icons/FullScreenMax";
 import DocOnePage from "./icons/DocOnePage";
 
 const headerClassName =
-  "font-bold p-2 border-b border-slate-400 bg-gray-100 text-slate-700 " +
+  "p-2 border-b border-slate-400 text-slate-700 " +
   "flex justify-between items-center";
 
 const ViewerHeader = (props: { onExpand: () => void }) => {
@@ -40,7 +40,7 @@ const EditorHeader = (props: { readable: string; onOpenInput: () => void }) => {
   }, [props.readable]);
 
   return (
-    <div className={classNames(headerClassName)}>
+    <div className={headerClassName}>
       <span>Markdown Editor</span>
       <div className="flex space-x-2">
         <Button

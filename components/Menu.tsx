@@ -16,15 +16,15 @@ const Menu = ({ buttons, onAdd, onRemove, onEdit, onClose }: MenuProps) => {
   return (
     <div className="flex space-x-4 my-2">
       {buttons.add && (
-        <Button color="red" onClick={onAdd} Icon={Add} text="Add" />
+        <Button color="black" onClick={onAdd} Icon={Add} text="Add" />
       )}
       {buttons.remove && (
-        <Button color="green" onClick={onRemove} Icon={Remove} text="Remove" />
+        <Button color="black" onClick={onRemove} Icon={Remove} text="Remove" />
       )}
       {buttons.edit && (
-        <Button color="blue" onClick={onEdit} Icon={Edit} text="Edit" />
+        <Button color="black" onClick={onEdit} Icon={Edit} text="Edit" />
       )}
-      <Button color="slate" onClick={onClose} Icon={Dismiss} text="Close" />
+      <Button color="black" onClick={onClose} Icon={Dismiss} text="Close" />
     </div>
   );
 };

@@ -5,8 +5,9 @@ import makeDiff, {
   diffWithoutSplit,
   SingleLine,
   updateSentece,
+  Sign,
 } from "utils/makeDiff";
-import classnames from "classnames";
+import classNames from "classnames";
 import MdEditor from "./MdEditor";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import Menu from "./Menu";
@@ -16,6 +17,7 @@ type DiffCharProps = {
   isEditing: boolean;
   sentence: string;
   chars: Char[];
+  sign: Sign;
   onUpdate: (markdonw: string) => void;
   onCancel: () => void;
 };
@@ -24,6 +26,7 @@ const DiffChars = ({
   isEditing,
   sentence,
   chars,
+  sign,
   onUpdate,
   onCancel,
 }: DiffCharProps) => {
@@ -40,9 +43,11 @@ const DiffChars = ({
           <span
             key={i}
             role="cell"
-            className={classnames({
-              "bg-red-200": char.removed,
-              "bg-green-200": char.added,
+            className={classNames({
+              "bg-red-900 text-white font-bold line-through px-px mx-px":
+                char.removed,
+              "bg-green-900 text-white px-px mx-px": char.added,
+              "line-through": sign === "-",
             })}
           >
             {char.value}
@@ -112,14 +117,21 @@ const DiffRow = ({
     <div
       role="row"
       ref={element}
-      className={classnames({
-        "flex cursor-pointer pr-2": true,
-        "bg-red-50 hover:bg-red-100": line.sign === "-",
-        "bg-green-50 hover:bg-green-100": line.sign === "+",
-        "bg-white hover:bg-gray-100": line.sign === null,
+      className={classNames({
+        "flex cursor-pointer pr-2 group relative": true,
+        "text-red-900": line.sign === "-",
+        "text-green-900": line.sign === "+",
       })}
       onClick={onClickLine}
     >
+      <div
+        className={classNames({
+          "absolute top-0 left-0 h-full w-2": true,
+          "group-hover:bg-slate-900": line.sign === null,
+          "group-hover:bg-red-900": line.sign === "-",
+          "group-hover:bg-green-900": line.sign === "+",
+        })}
+      ></div>
       <div role="cell" className="w-8 whitespace-pre-wrap text-center shrink-0">
         {line.sign || " "}
       </div>
@@ -128,6 +140,7 @@ const DiffRow = ({
           isEditing={isEditing}
           sentence={line.sentence}
           chars={line.chars}
+          sign={line.sign}
           onUpdate={onClickUpdate}
           onCancel={onCancel}
         />
