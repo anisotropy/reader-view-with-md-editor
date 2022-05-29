@@ -51,10 +51,12 @@ export default function useResize(
   useEffect(() => {
     if (!window) return;
     window.addEventListener("resize", onDebouncedResize);
-    if (prevOnResize.current) {
+
+    if (prevOnResize.current && prevOnResize.current !== onDebouncedResize) {
       window.removeEventListener("resize", prevOnResize.current);
     }
     prevOnResize.current = onDebouncedResize;
+
     return () => window.removeEventListener("resize", onDebouncedResize);
   }, [onDebouncedResize]);
 
