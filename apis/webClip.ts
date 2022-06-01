@@ -1,8 +1,11 @@
 import axios from "axios";
-import { Data, Response } from "pages/api/webClip";
+import { Data, Response, Error } from "pages/api/webClip";
 
-export default async function webClip({ url, html }: Data) {
+export type WebClipData = Data;
+export type WebClipRes = Response;
+
+export default async function webClip({ url, html }: WebClipData) {
   const data = { url, html };
-  const res: { data: Response } = await axios.post(`/api/webClip`, data);
+  const res = await axios.post<WebClipRes>(`/api/webClip`, data);
   return res.data;
 }

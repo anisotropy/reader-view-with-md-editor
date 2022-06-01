@@ -17,6 +17,8 @@ export type Response = {
   readable: string;
 };
 
+export type Error = { error: { code: string; message: string } };
+
 async function convertMarkdown(
   html: string,
   fallback?: string
@@ -44,7 +46,7 @@ const attachTitle = (markdown: string, title: string) => {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Response>
+  res: NextApiResponse<Response | Error>
 ) {
   const body = req.body as Data;
   let origin = "";
@@ -52,23 +54,32 @@ export default async function handler(
   let readableText = "";
   let title = "";
 
-  try {
-    if (body.url) {
-      const html = await axios.get(body.url);
-      const $ = cheerio.load(html.data);
-      origin = $("body").html() || "";
-    } else {
-      origin = body.html || "";
-    }
-
-    const doc = new JSDOM(origin);
-    const readableDoc = new Readability(doc.window.document).parse();
-    title = readableDoc?.title || "";
-    readable = readableDoc?.content || "";
-    readableText = readableDoc?.textContent || "";
-  } catch (error) {
-    console.log(error);
+  if (!body.url && !body.html) {
+    return res
+      .status(400)
+      .json({ error: { code: "no req", message: "no url and no html" } });
   }
+
+  if (body.url) {
+    let html: any;
+    try {
+      html = await axios.get(body.url);
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ error: { code: "wronng url", message: "wrong url" } });
+    }
+    const $ = cheerio.load(html.data);
+    origin = $("body").html() || "";
+  } else {
+    origin = body.html || "";
+  }
+
+  const doc = new JSDOM(origin);
+  const readableDoc = new Readability(doc.window.document).parse();
+  title = readableDoc?.title || "";
+  readable = readableDoc?.content || "";
+  readableText = readableDoc?.textContent || "";
 
   [origin, readable] = await Promise.all([
     convertMarkdown(origin),

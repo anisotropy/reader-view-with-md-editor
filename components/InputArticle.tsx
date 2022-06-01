@@ -1,14 +1,12 @@
 import { SubmitHandler, useForm, useWatch } from "react-hook-form";
 import Button from "./Button";
 import Radio from "./Radio";
-import webClip from "apis/webClip";
 import classNames from "classnames";
 import Backdrop from "./Backdrop";
-import Clock from "./icons/Clock";
-import { useEffect, useState } from "react";
-import Check from "./icons/Check";
+import { useCallback, useEffect, useState } from "react";
 import Dismiss from "./icons/Dismiss";
 import DocOnePage from "./icons/DocOnePage";
+import MakeReadable from "./MakeReadable";
 
 type FormInput = {
   source: "url" | "html";
@@ -26,24 +24,33 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
   const { register, control, handleSubmit, setFocus } = useForm<FormInput>({
     defaultValues: { source: "url", url: "", html: "" },
   });
+  const [formData, setFormData] = useState<FormInput | null>(null);
 
   const source = useWatch({ control, name: "source" });
   const url = useWatch({ control, name: "url" });
   const html = useWatch({ control, name: "html" });
 
-  const showSubmitButton =
-    (source === "html" && html) || (source === "url" && url);
+  const canSubmit = Boolean(
+    (source === "html" && html) || (source === "url" && url)
+  );
 
-  const onSubmit: SubmitHandler<FormInput> = async ({ url, html }) => {
-    if (!showSubmitButton) return;
-    if (url || html) {
-      setIsProcessing(true);
-      const res = await webClip({ url, html });
-      onChangeArticle(res);
-    } else {
-      // TODO: url과 html 모두 없을 때 경고 메시지 표시
-    }
+  const onSubmit: SubmitHandler<FormInput> = async (data) => {
+    if (!canSubmit) return;
+    setFormData(data);
+    setIsProcessing(true);
   };
+
+  const onFinshMakeReadable = useCallback(
+    (article: { origin: string; readable: string } | null) => {
+      if (article) {
+        onChangeArticle(article);
+      } else {
+        setFormData(null);
+        setIsProcessing(false);
+      }
+    },
+    [onChangeArticle]
+  );
 
   useEffect(() => {
     setFocus(source);
@@ -100,12 +107,12 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
             />
           </div>
           <div className="flex space-x-4">
-            {showSubmitButton &&
-              (isProcessing ? (
-                <Button text="Processing..." Icon={Clock} iconSpin disabled />
-              ) : (
-                <Button submit Icon={Check} text="Use Reader Mode" />
-              ))}
+            <MakeReadable
+              url={formData?.url}
+              html={formData?.html}
+              disabled={!canSubmit}
+              onFinish={onFinshMakeReadable}
+            />
             <Button
               border
               Icon={Dismiss}
