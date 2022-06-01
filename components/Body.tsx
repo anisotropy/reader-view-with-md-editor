@@ -27,6 +27,9 @@ const EditorHeader = (props: { readable: string; onOpenInput: () => void }) => {
 
   const onCopy = () => {
     setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000);
   };
 
   useEffect(() => {
