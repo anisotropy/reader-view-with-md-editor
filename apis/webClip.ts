@@ -14,7 +14,6 @@ export default async function webClip({ url, html }: WebClipReq) {
     return res.data;
   } catch (error) {
     if (error instanceof AxiosError) {
-      console.error(error);
       switch (error.response?.data?.error as WcError[keyof WcError]) {
         case "req":
           throw new ReqError();
@@ -31,21 +30,21 @@ export default async function webClip({ url, html }: WebClipReq) {
 }
 
 export class WebClipError extends Error {
-  name = "web clip error";
+  name = "WebClipError";
 }
 
 export class UnknownError extends WebClipError {
-  message = "unknown";
+  message = "Unknown error occured!";
 }
 
 export class ReqError extends WebClipError {
-  message = "req";
+  message = "You must put a webpage URL or HTML codes!";
 }
 
 export class UrlError extends WebClipError {
-  message = "url";
+  message = "You put a WRONG URL or We can NOT access the URL!";
 }
 
 export class MarkdownError extends WebClipError {
-  message = "markdown";
+  message = "Can NOT convert HTML to markdown!";
 }
