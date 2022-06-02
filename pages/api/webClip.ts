@@ -19,7 +19,7 @@ export type WebClipRes = {
 
 export type WebClipError = { error: "req" | "url" | "markdown" };
 
-async function doAsync(fetcher: () => Promise<any>) {
+async function asyncBlock(fetcher: () => Promise<any>) {
   try {
     const data = await fetcher();
     return { data };
@@ -51,23 +51,23 @@ export default async function handler(
   res: NextApiResponse<WebClipRes | WebClipError>
 ) {
   const body = req.body as WebClipReq;
-  let origin: string;
+  // let origin: string;
 
   if (!body.url && !body.html) {
     return res.status(400).json({ error: "req" });
   }
 
-  if (body.url) {
-    const { data: html, error: urlError } = await doAsync(
-      async () => await axios.get(body?.url || "")
-    );
-    if (urlError) {
-      return res.status(500).json({ error: "url" });
+  const { data: origin, error: urlError } = await asyncBlock(async () => {
+    if (body.url) {
+      const html = await axios.get(body.url);
+      const $ = cheerio.load(html.data);
+      return $("body").html() || "";
+    } else {
+      return body.html || "";
     }
-    const $ = cheerio.load(html.data);
-    origin = $("body").html() || "";
-  } else {
-    origin = body.html || "";
+  });
+  if (urlError) {
+    return res.status(500).json({ error: "url" });
   }
 
   const doc = new JSDOM(origin);
@@ -75,7 +75,7 @@ export default async function handler(
   const title = readableDoc?.title || "";
   const readable = readableDoc?.content || "";
 
-  const { data: markdown, error: mdError } = await doAsync(
+  const { data: markdown, error: mdError } = await asyncBlock(
     async () =>
       await Promise.all([convertMarkdown(origin), convertMarkdown(readable)])
   );
@@ -86,5 +86,4 @@ export default async function handler(
   res
     .status(200)
     .json({ origin: markdown[0], readable: attachTitle(markdown[1], title) });
-  //TODO: sentry에서 에러를 catch 할 수 있도록 에러 처리
 }
