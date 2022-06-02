@@ -14,7 +14,7 @@ export default async function webClip({ url, html }: WebClipReq) {
     return res.data;
   } catch (error) {
     if (error instanceof AxiosError) {
-      switch (error.response?.data?.error as WcError[keyof WcError]) {
+      switch (error.response?.data?.error as WcError["error"]) {
         case "req":
           throw new ReqError();
         case "url":
