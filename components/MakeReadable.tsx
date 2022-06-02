@@ -1,4 +1,9 @@
-import webClip, { WebClipRes } from "apis/webClip";
+import webClip, {
+  ReqError,
+  WebClipError,
+  WebClipRes,
+  WebClipReq,
+} from "apis/webClip";
 import { useCallback, useEffect, useState } from "react";
 import Button from "./Button";
 import ErrorMessage from "./ErrorMessage";
@@ -13,12 +18,15 @@ type MakeReadableProps = {
 };
 
 const useWebClip = ({ url, html }: { url?: string; html?: string }) => {
-  const [res, setRes] = useState<{ data: WebClipRes | null; error: any }>({
+  const [res, setRes] = useState<{
+    data: WebClipRes | null;
+    error: WebClipError | null;
+  }>({
     data: null,
     error: null,
   });
 
-  const doWebClip = useCallback(async () => {
+  const doWebClip = useCallback(async ({ url, html }: WebClipReq) => {
     if (!url && !html) {
       setRes({ data: null, error: null });
       return;
@@ -27,13 +35,15 @@ const useWebClip = ({ url, html }: { url?: string; html?: string }) => {
       const res = await webClip({ url, html });
       setRes({ data: res, error: null });
     } catch (error) {
-      setRes({ data: null, error });
+      if (error instanceof WebClipError) {
+        setRes({ data: null, error });
+      }
     }
-  }, [url, html]);
+  }, []);
 
   useEffect(() => {
-    doWebClip();
-  }, [doWebClip]);
+    doWebClip({ url, html });
+  }, [url, html]); // eslint-disable-line
 
   return { data: res.data, error: res.error };
 };
@@ -49,9 +59,7 @@ const MakeReadable = ({ disabled, url, html, onFinish }: MakeReadableProps) => {
 
   useEffect(() => {
     if (error) {
-      if (error.response.data.error.code !== "no req") {
-        setErrorMessage(error.response.data.error.code);
-      }
+      setErrorMessage(error.message);
     } else if (data) {
       onFinish(data);
     }

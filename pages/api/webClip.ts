@@ -10,33 +10,35 @@ import remarkStringify from "remark-stringify";
 import remarkGfm from "remark-gfm";
 import * as cheerio from "cheerio";
 
-export type Data = { url?: string; html?: string };
+export type WebClipReq = { url?: string; html?: string };
 
-export type Response = {
+export type WebClipRes = {
   origin: string;
   readable: string;
 };
 
-export type Error = { error: { code: string; message: string } };
+export type WebClipError = { error: "req" | "url" | "markdown" };
 
-async function convertMarkdown(
-  html: string,
-  fallback?: string
-): Promise<string> {
-  if (!html) return "";
+async function doAsync(fetcher: () => Promise<any>) {
   try {
-    return String(
-      await unified()
-        .use(rehypeParse)
-        .use(rehypeSanitize)
-        .use(rehypeRemark)
-        .use(remarkGfm)
-        .use(remarkStringify, { fences: true })
-        .process(html)
-    );
+    const data = await fetcher();
+    return { data };
   } catch (error) {
-    return fallback ? fallback : html;
+    return { error };
   }
+}
+
+async function convertMarkdown(html: string): Promise<string> {
+  if (!html) return "";
+  return String(
+    await unified()
+      .use(rehypeParse)
+      .use(rehypeSanitize)
+      .use(rehypeRemark)
+      .use(remarkGfm)
+      .use(remarkStringify, { fences: true })
+      .process(html)
+  );
 }
 
 const attachTitle = (markdown: string, title: string) => {
@@ -46,28 +48,21 @@ const attachTitle = (markdown: string, title: string) => {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Response | Error>
+  res: NextApiResponse<WebClipRes | WebClipError>
 ) {
-  const body = req.body as Data;
-  let origin = "";
-  let readable = "";
-  let readableText = "";
-  let title = "";
+  const body = req.body as WebClipReq;
+  let origin: string;
 
   if (!body.url && !body.html) {
-    return res
-      .status(400)
-      .json({ error: { code: "no req", message: "no url and no html" } });
+    return res.status(400).json({ error: "req" });
   }
 
   if (body.url) {
-    let html: any;
-    try {
-      html = await axios.get(body.url);
-    } catch (error) {
-      return res
-        .status(500)
-        .json({ error: { code: "wronng url", message: "wrong url" } });
+    const { data: html, error: urlError } = await doAsync(
+      async () => await axios.get(body?.url || "")
+    );
+    if (urlError) {
+      return res.status(500).json({ error: "url" });
     }
     const $ = cheerio.load(html.data);
     origin = $("body").html() || "";
@@ -77,15 +72,19 @@ export default async function handler(
 
   const doc = new JSDOM(origin);
   const readableDoc = new Readability(doc.window.document).parse();
-  title = readableDoc?.title || "";
-  readable = readableDoc?.content || "";
-  readableText = readableDoc?.textContent || "";
+  const title = readableDoc?.title || "";
+  const readable = readableDoc?.content || "";
 
-  [origin, readable] = await Promise.all([
-    convertMarkdown(origin),
-    convertMarkdown(readable),
-  ]);
+  const { data: markdown, error: mdError } = await doAsync(
+    async () =>
+      await Promise.all([convertMarkdown(origin), convertMarkdown(readable)])
+  );
+  if (mdError) {
+    return res.status(500).json({ error: "markdown" });
+  }
 
-  res.status(200).json({ origin, readable: attachTitle(readable, title) });
+  res
+    .status(200)
+    .json({ origin: markdown[0], readable: attachTitle(markdown[1], title) });
   //TODO: sentry에서 에러를 catch 할 수 있도록 에러 처리
 }
