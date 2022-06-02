@@ -1,9 +1,4 @@
-import webClip, {
-  ReqError,
-  WebClipError,
-  WebClipRes,
-  WebClipReq,
-} from "apis/webClip";
+import webClip, { WebClipError, WebClipRes, WebClipReq } from "apis/webClip";
 import { useCallback, useEffect, useState } from "react";
 import Button from "./Button";
 import ErrorMessage from "./ErrorMessage";
