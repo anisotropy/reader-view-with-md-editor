@@ -3,6 +3,7 @@ import Button from "./Button";
 import GitHub from "./icons/GitHub";
 import Maximize from "./icons/Maximize";
 import Minimize from "./icons/Minimize";
+import ThemeButton from "./ThemeButton";
 
 const Header = () => {
   const [isShirinked, setIsShirinked] = useState(false);
@@ -18,7 +19,7 @@ const Header = () => {
   const title = "Reader Mode View with Markdown Editor";
 
   return isShirinked ? (
-    <div className="flex items-center space-x-4 mb-2 text-slate-700">
+    <div className="flex items-center space-x-4 mb-2 text-slate-700 dark:text-white">
       <h1>{title}</h1>
       <Button text="Expand" Icon={Maximize} border onClick={onExpand} />
     </div>
@@ -48,6 +49,7 @@ const Header = () => {
           href="https://github.com/anisotropy/reader-view-with-md-editor"
         />
         <Button text="Shrink" Icon={Minimize} border onClick={onShrink} />
+        <ThemeButton />
       </div>
     </div>
   );
