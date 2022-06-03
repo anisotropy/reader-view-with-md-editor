@@ -18,10 +18,23 @@ const Header = () => {
 
   const title = "Reader Mode View with Markdown Editor";
 
+  const otherButtons = (
+    <>
+      <ThemeButton />
+      <Button
+        circle
+        Icon={GitHub}
+        border
+        href="https://github.com/anisotropy/reader-view-with-md-editor"
+      />
+    </>
+  );
+
   return isShirinked ? (
-    <div className="flex items-center space-x-4 mb-2 text-slate-700 dark:text-white">
+    <div className="flex items-center space-x-2 mb-2 text-slate-700 dark:text-white">
       <h1>{title}</h1>
-      <Button text="Expand" Icon={Maximize} border onClick={onExpand} />
+      <Button Icon={Maximize} border circle onClick={onExpand} />
+      {otherButtons}
     </div>
   ) : (
     <div className="max-w-xl mb-2 text-slate-700">
@@ -42,14 +55,8 @@ const Header = () => {
         are removed.
       </p>
       <div className="flex mt-2 justify-between">
-        <Button
-          circle
-          Icon={GitHub}
-          border
-          href="https://github.com/anisotropy/reader-view-with-md-editor"
-        />
         <Button text="Shrink" Icon={Minimize} border onClick={onShrink} />
-        <ThemeButton />
+        <div className="flex space-x-2">{otherButtons}</div>
       </div>
     </div>
   );
