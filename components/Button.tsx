@@ -1,11 +1,10 @@
 import classNames from "classnames";
-import FullScreenMax from "./icons/FullScreenMax";
 
 type ButtonProps = {
   text?: string;
   submit?: boolean;
   color?: "blue" | "green" | "red" | "slate" | "orange" | "black";
-  textSize?: "sm";
+  size?: "sm";
   Icon?: (props: { className?: string }) => JSX.Element;
   className?: string;
   disabled?: boolean;
@@ -21,7 +20,7 @@ const Button = ({
   text,
   submit,
   color = "black",
-  textSize = "sm",
+  size = "sm",
   Icon,
   className: extraClassName,
   disabled,
@@ -48,13 +47,13 @@ const Button = ({
     "relative flex items-center space-x-1": true,
     "leading-none outline-offset-2": true,
     "hover:drop-shadow hover:-top-px hover:-left-px": !disabled,
-    "text-sm h-8": textSize === "sm",
+    "text-sm h-8": size === "sm",
     rounded: !circle,
-    "px-3": !circle && textSize === "sm" && text && !Icon,
-    "pl-2 pr-3": !circle && textSize === "sm" && text && Icon,
-    "px-2": !circle && textSize === "sm" && !text && Icon,
+    "px-3": !circle && size === "sm" && text && !Icon,
+    "pl-2 pr-3": !circle && size === "sm" && text && Icon,
+    "px-2": !circle && size === "sm" && !text && Icon,
     "rounded-full": circle,
-    "w-8 justify-center": circle && textSize === "sm",
+    "w-8 justify-center": circle && size === "sm",
     "font-bold": fontBold,
     ...(border ? styleWithBorder : styleWithoutBorder),
     [extraClassName || ""]: Boolean(extraClassName),
@@ -62,7 +61,7 @@ const Button = ({
 
   const iconClassName = classNames({
     "fill-current": true,
-    "w-5": textSize === "sm",
+    "w-5": size === "sm",
     "animate-spin": iconSpin,
   });
 
