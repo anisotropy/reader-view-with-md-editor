@@ -3,7 +3,7 @@ import classNames from "classnames";
 type ButtonProps = {
   text?: string;
   submit?: boolean;
-  color?: "blue" | "green" | "red" | "slate" | "orange" | "black";
+  color?: "blue" | "black";
   size?: "sm";
   Icon?: (props: { className?: string }) => JSX.Element;
   className?: string;
@@ -32,20 +32,20 @@ const Button = ({
   onClick,
 }: ButtonProps) => {
   const styleWithoutBorder = {
-    "border-0 text-white disabled:bg-slate-400": true,
-    "bg-sky-700 outline-sky-700": color === "blue",
-    "bg-slate-900 outline-slate-900": color === "black",
+    "border-0 m-text-white disabled:m-bg-gray": true,
+    "m-bg-sky m-outlint-sky": color === "blue",
+    "m-bg-slate m-outline-slate": color === "black",
   };
 
   const styleWithBorder = {
-    "border bg-white disabled:border-slate-400 disabled:text-slate-400": true,
-    "border-slate-700 text-slate-700 outline-slate-700": color === "black",
-    "border-red-900 text-red-900 outline-red-900": color === "red",
+    "border m-bg-white": true,
+    "m-border-slate m-text-slate m-outline-slate": color === "black",
   };
 
   const className = classNames({
     "relative flex items-center space-x-1": true,
     "leading-none outline-offset-2": true,
+    "disabled:m-border-gray disabled:m-text-gray disabled:m-outline-gray": true,
     "hover:drop-shadow hover:-top-px hover:-left-px": !disabled,
     "text-sm h-8": size === "sm",
     rounded: !circle,

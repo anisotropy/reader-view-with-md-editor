@@ -1,3 +1,61 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .m-bg-white {
+    @apply bg-white dark:bg-black;
+  }
+  .m-bg-slate {
+    @apply bg-slate-900 dark:bg-slate-200;
+  }
+  .m-bg-gray {
+    @apply bg-slate-400 dark:bg-slate-400;
+  }
+  .m-bg-red {
+    @apply bg-red-900 dark:bg-red-700;
+  }
+  .m-bg-green {
+    @apply bg-green-900 dark:bg-green-700;
+  }
+  .m-bg-sky {
+    @apply bg-sky-800 dark:bg-sky-500;
+  }
+
+  .m-text-white {
+    @apply text-white dark:text-black;
+  }
+  .m-text-slate {
+    @apply text-slate-700 dark:text-slate-200;
+  }
+  .m-text-gray {
+    @apply text-slate-400 dark:text-slate-400;
+  }
+  .m-text-red {
+    @apply text-red-900 dark:text-red-700;
+  }
+  .m-text-green {
+    @apply text-green-900 dark:text-green-700;
+  }
+
+  .m-border-slate {
+    @apply border-slate-700 dark:border-white;
+  }
+  .m-border-gray {
+    @apply border-slate-400 dark:border-slate-400;
+  }
+
+  .m-outline-slate {
+    @apply outline-slate-700 dark:outline-white;
+  }
+  .m-outline-gray {
+    @apply outline-slate-400 dark:outline-slate-400;
+  }
+  .m-outline-sky {
+    @apply outline-sky-800 dark:outline-sky-500;
+  }
+
+  .m-fill-slate {
+    @apply fill-slate-700 dark:fill-slate-200;
+  }
+}

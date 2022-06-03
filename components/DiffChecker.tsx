@@ -17,7 +17,6 @@ import React, {
   useState,
 } from "react";
 import Menu from "./Menu";
-import useResize from "hooks/useResize";
 
 type DiffCharProps = {
   isEditing: boolean;
@@ -50,9 +49,9 @@ const DiffChars = ({
             key={i}
             role="cell"
             className={classNames({
-              "bg-red-900 text-white font-bold line-through px-px mx-px":
+              "m-bg-red m-text-white font-bold line-through px-px mx-px":
                 char.removed,
-              "bg-green-900 text-white px-px mx-px": char.added,
+              "m-bg-green m-text-white px-px mx-px": char.added,
               "line-through": sign === "-",
             })}
           >
@@ -117,16 +116,16 @@ const DiffRow = ({
       ref={element}
       className={classNames({
         "flex cursor-pointer pr-2 group relative": true,
-        "text-red-900": line.sign === "-",
-        "text-green-900": line.sign === "+",
+        "m-text-red": line.sign === "-",
+        "m-text-green": line.sign === "+",
       })}
       onClick={onClickLine}
     >
       <div
         className={classNames({
           "absolute top-0 left-0 h-full w-2 ": true,
-          "group-hover:bg-slate-900": !isEditing,
-          "group-hover:bg-sky-800": isEditing,
+          "group-hover:m-bg-slate": !isEditing,
+          "group-hover:m-bg-sky": isEditing,
         })}
       ></div>
       <div role="cell" className="w-8 whitespace-pre-wrap text-center shrink-0">
@@ -235,7 +234,7 @@ const DiffChecker = ({
 
   if (!oldDoc && !newDoc) return null;
   return (
-    <div className="text-slate-700 leading-relaxed">
+    <div className="m-text-slate leading-relaxed">
       {lines.map((line) => (
         <DiffRow
           key={line.id}

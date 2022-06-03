@@ -31,13 +31,13 @@ const Header = () => {
   );
 
   return isShirinked ? (
-    <div className="flex items-center space-x-2 mb-2 text-slate-700 dark:text-white">
+    <div className="flex items-center space-x-2 mb-2 m-text-slate">
       <h1>{title}</h1>
       <Button Icon={Maximize} border circle onClick={onExpand} />
       {otherButtons}
     </div>
   ) : (
-    <div className="max-w-xl mb-2 text-slate-700">
+    <div className="max-w-xl mb-2 m-text-slate">
       <h1 className="text-center text-2xl font-bold">{title}</h1>
       <p className="mt-2">
         Get rid of annoying ads or pop-ups on a webpage and read it on{" "}

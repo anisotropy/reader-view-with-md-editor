@@ -44,8 +44,7 @@ const App = () => {
     <>
       <div
         className={classNames({
-          "flex flex-col items-center h-screen p-4 bg-white dark:bg-slate-700":
-            true,
+          "flex flex-col items-center h-screen p-4 m-bg-white": true,
           hidden: markdown !== null,
         })}
       >

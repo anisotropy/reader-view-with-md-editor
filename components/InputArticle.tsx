@@ -59,13 +59,13 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
   const inputClassName =
     "flex-1 p-1 " +
     "border border-transparent outline-none " +
-    "placeholder:text-slate-400" +
-    "disabled:border-slate-400 disabled:text-slate-400 disabled:bg-transparent " +
-    "focus:border-slate-700";
+    "placeholder:m-text-gray" +
+    "m-bg-white disabled:bg-transparent disabled:m-border-gray disabled:m-text-gray " +
+    "focus:m-border-slate";
 
   return (
     <Backdrop>
-      <div className="w-full p-4 max-w-2xl bg-white text-slate-700 rounded-md">
+      <div className="w-full p-4 max-w-2xl m-bg-white m-text-slate rounded-md">
         <h1 className="flex text-lg items-center space-x-1">
           <DocOnePage className="w-6 fill-current" /> <span>Webpage</span>
         </h1>

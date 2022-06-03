@@ -13,7 +13,7 @@ const FullScreenViewer = (props: FullScreenViewerProps) => {
       <div className="fixed bottom-4 right-4">
         <Button
           text="Shrink"
-          className="border border-white"
+          className="border m-border-white"
           Icon={FullScreenMin}
           onClick={props.onShrink}
         />
