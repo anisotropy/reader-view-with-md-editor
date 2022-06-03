@@ -43,7 +43,7 @@ const Header = () => {
       </p>
       <div className="flex mt-2 justify-between">
         <Button
-          text="GitHub"
+          circle
           Icon={GitHub}
           border
           href="https://github.com/anisotropy/reader-view-with-md-editor"

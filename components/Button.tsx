@@ -2,7 +2,7 @@ import classNames from "classnames";
 import FullScreenMax from "./icons/FullScreenMax";
 
 type ButtonProps = {
-  text: string;
+  text?: string;
   submit?: boolean;
   color?: "blue" | "green" | "red" | "slate" | "orange" | "black";
   textSize?: "sm";
@@ -11,6 +11,7 @@ type ButtonProps = {
   disabled?: boolean;
   href?: string;
   border?: boolean;
+  circle?: boolean;
   fontBold?: boolean;
   iconSpin?: boolean;
   onClick?: () => void;
@@ -26,6 +27,7 @@ const Button = ({
   disabled,
   href,
   border,
+  circle,
   fontBold,
   iconSpin,
   onClick,
@@ -44,11 +46,15 @@ const Button = ({
 
   const className = classNames({
     "relative flex items-center space-x-1": true,
-    "rounded leading-none outline-offset-2": true,
+    "leading-none outline-offset-2": true,
     "hover:drop-shadow hover:-top-px hover:-left-px": !disabled,
     "text-sm h-8": textSize === "sm",
-    "px-3": textSize === "sm" && !Icon,
-    "pl-2 pr-3": textSize === "sm" && Icon,
+    rounded: !circle,
+    "px-3": !circle && textSize === "sm" && text && !Icon,
+    "pl-2 pr-3": !circle && textSize === "sm" && text && Icon,
+    "px-2": !circle && textSize === "sm" && !text && Icon,
+    "rounded-full": circle,
+    "w-8 justify-center": circle && textSize === "sm",
     "font-bold": fontBold,
     ...(border ? styleWithBorder : styleWithoutBorder),
     [extraClassName || ""]: Boolean(extraClassName),
@@ -60,6 +66,13 @@ const Button = ({
     "animate-spin": iconSpin,
   });
 
+  const iconAndText = (
+    <>
+      {Icon && <Icon className={iconClassName} />}
+      {text && <span>{text}</span>}
+    </>
+  );
+
   return href ? (
     <a
       target="_blank"
@@ -68,8 +81,7 @@ const Button = ({
       role="button"
       className={className}
     >
-      {Icon && <Icon className={iconClassName} />}
-      <span>{text}</span>
+      {iconAndText}
     </a>
   ) : (
     <button
@@ -78,8 +90,7 @@ const Button = ({
       disabled={disabled}
       onClick={onClick}
     >
-      {Icon && <Icon className={iconClassName} />}
-      <span>{text}</span>
+      {iconAndText}
     </button>
   );
 };

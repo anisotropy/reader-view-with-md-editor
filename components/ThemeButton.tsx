@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { useTheme } from "next-themes";
 import { useState } from "react";
+import Button from "./Button";
 import Moon from "./icons/Moon";
 import MoonFilled from "./icons/MoonFilled";
 import Sun from "./icons/Sun";
@@ -47,16 +48,13 @@ export default function ThemeButton() {
 
   return (
     <div className="relative">
-      <button
-        className={classNames(
-          buttonClass,
-          openMenu && "invisible",
-          "h-8 w-8 border rounded-full bg-white border-slate-700 flex justify-center items-center hover:drop-shadow"
-        )}
+      <Button
+        Icon={Icon}
+        border
+        circle
+        className={classNames({ invisible: openMenu })}
         onClick={onOpenMenu}
-      >
-        <Icon className={iconClass} />
-      </button>
+      />
       {openMenu && (
         <div
           className={classNames(
