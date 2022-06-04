@@ -10,7 +10,7 @@ import FullScreenMax from "./icons/FullScreenMax";
 import DocOnePage from "./icons/DocOnePage";
 
 const headerClassName =
-  "p-2 border-b m-border-slate m-text-slate " +
+  "p-2 border-b m-border-gray m-text-slate " +
   "flex justify-between items-center";
 
 const ViewerHeader = (props: { onExpand: () => void }) => {
