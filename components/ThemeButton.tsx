@@ -8,34 +8,9 @@ import Sun from "./icons/Sun";
 import SunFilled from "./icons/SunFilled";
 import System from "./icons/System";
 
-const ModeIcon = (props: { theme?: string; systemTheme?: string }) => {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const iconProps = { className: "fill-slate-700 w-5 ml-1" };
-  if (!mounted || !props.theme) return <Sun {...iconProps} />;
-  if (props.theme === "system") {
-    return props.systemTheme === "dark" ? (
-      <Moon {...iconProps} />
-    ) : (
-      <Sun {...iconProps} />
-    );
-  } else {
-    return props.theme === "dark" ? (
-      <MoonFilled {...iconProps} />
-    ) : (
-      <SunFilled {...iconProps} />
-    );
-  }
-};
-
 const ModeButton = (props: {
   theme?: string;
   systemTheme?: string;
-  openMenu?: boolean;
   onClick: () => void;
 }) => {
   const [mounted, setMounted] = useState(false);
@@ -54,29 +29,23 @@ const ModeButton = (props: {
       : props.theme === "dark"
       ? MoonFilled
       : SunFilled;
-  return (
-    <Button
-      Icon={Icon}
-      border
-      circle
-      className={classNames({ invisible: props.openMenu })}
-      onClick={props.onClick}
-    />
-  );
+  return <Button Icon={Icon} border circle onClick={props.onClick} />;
 };
 
 export default function ThemeButton() {
   const { theme, systemTheme, setTheme } = useTheme();
   const [openMenu, setOpenMenu] = useState(false);
 
-  const buttonClass =
-    "relative text-left leading-none outline-offset-2 outline-slate-700 hover:-top-px hover:-left-px text-sm";
-
-  const menuClass = classNames(buttonClass, "block w-full p-1");
+  const menuClass = classNames(
+    "relative text-left leading-none outline-offset-2 outline-slate-700 hover:-top-px hover:-left-px text-sm",
+    "block w-full p-1"
+  );
 
   const iconClass = "fill-slate-700 w-5 inline-block";
 
-  const onOpenMenu = () => setOpenMenu(true);
+  const onToggleMenu = () => {
+    setOpenMenu((prevOpenMenu) => !prevOpenMenu);
+  };
 
   const onSetLight = () => {
     setTheme("light");
@@ -94,32 +63,32 @@ export default function ThemeButton() {
   };
 
   return (
-    <div className="relative">
+    <div>
       <ModeButton
         theme={theme}
         systemTheme={systemTheme}
-        openMenu={openMenu}
-        onClick={onOpenMenu}
+        onClick={onToggleMenu}
       />
-      {openMenu && (
-        <div
-          className={classNames(
-            "z-50 absolute top-0 left-0 bg-white px-2 pt-1 pb-2 rounded drop-shadow",
-            "border border-slate-700 min-w-max space-y-2"
-          )}
-        >
-          <ModeIcon theme={theme} systemTheme={systemTheme} />
-          <button className={menuClass} onClick={onSetLight}>
-            <SunFilled className={iconClass} /> Light
-          </button>
-          <button className={menuClass} onClick={onSetDark}>
-            <MoonFilled className={iconClass} /> Dark
-          </button>
-          <button className={menuClass} onClick={onSetSystem}>
-            <System className={iconClass} /> System
-          </button>
-        </div>
-      )}
+      <div className="relative">
+        {openMenu && (
+          <div
+            className={classNames(
+              "z-50 absolute top-px left-0 bg-white px-2 pt-1 pb-2 rounded drop-shadow",
+              "border border-slate-700 min-w-max space-y-2"
+            )}
+          >
+            <button className={menuClass} onClick={onSetLight}>
+              <SunFilled className={iconClass} /> Light
+            </button>
+            <button className={menuClass} onClick={onSetDark}>
+              <MoonFilled className={iconClass} /> Dark
+            </button>
+            <button className={menuClass} onClick={onSetSystem}>
+              <System className={iconClass} /> System
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
