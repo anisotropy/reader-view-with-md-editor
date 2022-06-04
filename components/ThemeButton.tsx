@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { useTheme } from "next-themes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "./Button";
 import Moon from "./icons/Moon";
 import MoonFilled from "./icons/MoonFilled";
@@ -8,19 +8,66 @@ import Sun from "./icons/Sun";
 import SunFilled from "./icons/SunFilled";
 import System from "./icons/System";
 
-const block = <T,>(callback: () => T) => callback();
+const ModeIcon = (props: { theme?: string; systemTheme?: string }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const iconProps = { className: "fill-slate-700 w-5 ml-1" };
+  if (!mounted || !props.theme) return <Sun {...iconProps} />;
+  if (props.theme === "system") {
+    return props.systemTheme === "dark" ? (
+      <Moon {...iconProps} />
+    ) : (
+      <Sun {...iconProps} />
+    );
+  } else {
+    return props.theme === "dark" ? (
+      <MoonFilled {...iconProps} />
+    ) : (
+      <SunFilled {...iconProps} />
+    );
+  }
+};
+
+const ModeButton = (props: {
+  theme?: string;
+  systemTheme?: string;
+  openMenu?: boolean;
+  onClick: () => void;
+}) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const Icon =
+    !mounted || !props.theme
+      ? Sun
+      : props.theme === "system"
+      ? props.systemTheme === "dark"
+        ? Moon
+        : Sun
+      : props.theme === "dark"
+      ? MoonFilled
+      : SunFilled;
+  return (
+    <Button
+      Icon={Icon}
+      border
+      circle
+      className={classNames({ invisible: props.openMenu })}
+      onClick={props.onClick}
+    />
+  );
+};
 
 export default function ThemeButton() {
   const { theme, systemTheme, setTheme } = useTheme();
   const [openMenu, setOpenMenu] = useState(false);
-
-  const Icon = block(() => {
-    if (theme === "system") {
-      return systemTheme === "dark" ? Moon : Sun;
-    } else {
-      return theme === "dark" ? MoonFilled : SunFilled;
-    }
-  });
 
   const buttonClass =
     "relative text-left leading-none outline-offset-2 outline-slate-700 hover:-top-px hover:-left-px text-sm";
@@ -48,11 +95,10 @@ export default function ThemeButton() {
 
   return (
     <div className="relative">
-      <Button
-        Icon={Icon}
-        border
-        circle
-        className={classNames({ invisible: openMenu })}
+      <ModeButton
+        theme={theme}
+        systemTheme={systemTheme}
+        openMenu={openMenu}
         onClick={onOpenMenu}
       />
       {openMenu && (
@@ -62,7 +108,7 @@ export default function ThemeButton() {
             "border border-slate-700 min-w-max space-y-2"
           )}
         >
-          <Icon className={classNames(iconClass, "ml-1")} />
+          <ModeIcon theme={theme} systemTheme={systemTheme} />
           <button className={menuClass} onClick={onSetLight}>
             <SunFilled className={iconClass} /> Light
           </button>
