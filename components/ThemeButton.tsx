@@ -41,7 +41,7 @@ export default function ThemeButton() {
     "block w-full p-1"
   );
 
-  const iconClass = "fill-slate-700 w-5 inline-block";
+  const iconClass = "m-fill-slate w-5 inline-block";
 
   const onToggleMenu = () => {
     setOpenMenu((prevOpenMenu) => !prevOpenMenu);
@@ -73,8 +73,8 @@ export default function ThemeButton() {
         {openMenu && (
           <div
             className={classNames(
-              "z-50 absolute top-px left-0 bg-white px-2 pt-1 pb-2 rounded drop-shadow",
-              "border border-slate-700 min-w-max space-y-2"
+              "z-50 absolute top-px left-0 m-bg-white px-2 pt-1 pb-2 rounded drop-shadow",
+              "border m-border-slate min-w-max space-y-2"
             )}
           >
             <button className={menuClass} onClick={onSetLight}>

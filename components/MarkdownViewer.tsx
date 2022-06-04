@@ -12,7 +12,7 @@ const MarkdownViewer = ({ markdown, className }: MarkdownViewer) => {
   return (
     <article
       className={classNames(
-        "prose dark:prose-invert dark:prose-pre:bg-slate-800",
+        "prose dark:prose-invert dark:prose-pre:bg-zinc-900",
         className
       )}
     >
