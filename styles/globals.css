@@ -12,6 +12,12 @@
   .m-bg-gray {
     @apply bg-slate-400 dark:bg-slate-400;
   }
+  .m-bg-gray-light {
+    @apply bg-slate-300 dark:bg-slate-500;
+  }
+  .m-bg-gray-dark {
+    @apply bg-slate-500 dark:bg-slate-300;
+  }
   .m-bg-red {
     @apply bg-red-900 dark:bg-red-700;
   }
@@ -31,6 +37,12 @@
   .m-text-gray {
     @apply text-slate-400 dark:text-slate-400;
   }
+  .m-text-gray-light {
+    @apply text-slate-300 dark:text-slate-500;
+  }
+  .m-text-gray-dark {
+    @apply text-slate-500 dark:text-slate-300;
+  }
   .m-text-red {
     @apply text-red-900 dark:text-red-700;
   }
@@ -44,6 +56,12 @@
   .m-border-gray {
     @apply border-slate-400 dark:border-slate-400;
   }
+  .m-border-gray-light {
+    @apply border-slate-300 dark:border-slate-500;
+  }
+  .m-border-gray-dark {
+    @apply border-slate-500 dark:border-slate-300;
+  }
 
   .m-outline-slate {
     @apply outline-slate-700 dark:outline-white;
@@ -51,11 +69,20 @@
   .m-outline-gray {
     @apply outline-slate-400 dark:outline-slate-400;
   }
+  .m-outline-gray-light {
+    @apply outline-slate-300 dark:outline-slate-500;
+  }
+  .m-outline-gray-dark {
+    @apply outline-slate-500 dark:outline-slate-300;
+  }
   .m-outline-sky {
     @apply outline-sky-800 dark:outline-sky-500;
   }
 
   .m-fill-slate {
     @apply fill-slate-700 dark:fill-slate-200;
+  }
+  .m-fill-gray {
+    @apply fill-slate-400 dark:fill-slate-400;
   }
 }

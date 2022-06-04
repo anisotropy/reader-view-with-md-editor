@@ -56,12 +56,26 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
     setFocus(source);
   }, [setFocus, source]);
 
-  const inputClassName =
-    "flex-1 p-1 " +
-    "border border-transparent outline-none " +
-    "placeholder:m-text-gray" +
-    "m-bg-white disabled:bg-transparent disabled:m-border-gray disabled:m-text-gray " +
-    "focus:m-border-slate";
+  const radioProps = (theSource: "url" | "html") => ({
+    ...register("source"),
+    value: theSource,
+    selectedValue: source,
+    className: "w-8",
+    disabled: isProcessing,
+  });
+
+  const inputProps = (theSource: "url" | "html") => ({
+    ...register(theSource, { disabled: theSource !== source || isProcessing }),
+    autoComplete: "off",
+    placeholder: theSource === "url" ? "URL" : "Put HTML code",
+    className: classNames(
+      "flex-1 p-1 border outline-none placeholder:m-text-gray m-bg-white disabled:m-text-gray",
+      theSource === "html" && "resize-none h-36",
+      theSource === source
+        ? "m-border-slate m-text-black"
+        : "border-transparent"
+    ),
+  });
 
   return (
     <Backdrop>
@@ -73,38 +87,13 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
           onSubmit={handleSubmit(onSubmit)}
           className="mt-4 w-full space-y-4 text-sm"
         >
-          <div className="flex">
-            <Radio
-              {...register("source")}
-              value="url"
-              selectedValue={source}
-              className="w-8"
-              disabled={isProcessing}
-            />
-            <input
-              {...register("url", {
-                disabled: source !== "url" || isProcessing,
-              })}
-              autoComplete="off"
-              placeholder="URL"
-              className={inputClassName}
-            />
+          <div className="flex group">
+            <Radio {...radioProps("url")} />
+            <input {...inputProps("url")} />
           </div>
           <div className="flex">
-            <Radio
-              {...register("source")}
-              value="html"
-              selectedValue={source}
-              className="w-8"
-              disabled={isProcessing}
-            />
-            <textarea
-              {...register("html", {
-                disabled: source !== "html" || isProcessing,
-              })}
-              placeholder="Put HTML code"
-              className={classNames(inputClassName, "resize-none h-36")}
-            />
+            <Radio {...radioProps("html")} />
+            <textarea {...inputProps("html")} />
           </div>
           <div className="flex space-x-4">
             <MakeReadable

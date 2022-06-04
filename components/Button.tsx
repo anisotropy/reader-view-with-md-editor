@@ -32,7 +32,7 @@ const Button = ({
   onClick,
 }: ButtonProps) => {
   const styleWithoutBorder = {
-    "border-0 m-text-white disabled:m-bg-gray": true,
+    "border-0 m-text-white disabled:m-bg-gray-light": true,
     "m-bg-sky m-outlint-sky": color === "blue",
     "m-bg-slate m-outline-slate": color === "black",
   };
@@ -45,7 +45,8 @@ const Button = ({
   const className = classNames({
     "relative flex items-center space-x-1": true,
     "leading-none outline-offset-2": true,
-    "disabled:m-border-gray disabled:m-text-gray disabled:m-outline-gray": true,
+    "disabled:m-border-gray-dark disabled:m-text-gray-dark disabled:m-outline-gray-dark":
+      true,
     "hover:drop-shadow hover:-top-px hover:-left-px": !disabled,
     "text-sm h-8": size === "sm",
     rounded: !circle,

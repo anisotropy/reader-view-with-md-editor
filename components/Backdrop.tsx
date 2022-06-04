@@ -10,7 +10,7 @@ const Backdrop = ({ className, children }: BackdropProps) => {
           "fixed flex z-50 inset-0" + (className ? ` ${className}` : "")
         }
       >
-        <div className="absolute inset-0 bg-gray-500/40" />
+        <div className="absolute inset-0 bg-gray-500/40 dark:bg-gray-500/60" />
         <div className="flex justify-center items-center p-4 absolute inset-0 drop-shadow-lg font-sans">
           {children}
         </div>

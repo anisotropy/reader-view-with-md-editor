@@ -11,9 +11,9 @@ const Check = ({
 }) => {
   const className = classNames({
     "w-6": true,
-    "fill-slate-900 relative hover:-top-px hover:-left-px hover:drop-shadow":
+    "m-fill-slate relative hover:-top-px hover:-left-px hover:drop-shadow":
       !disabled,
-    "fill-slate-400": disabled,
+    "m-fill-gray": disabled,
   });
   return checked ? (
     <svg
