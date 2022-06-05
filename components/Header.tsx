@@ -1,12 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import GitHub from "./icons/GitHub";
 import Maximize from "./icons/Maximize";
 import Minimize from "./icons/Minimize";
 import ThemeButton from "./ThemeButton";
 
+// TODO:
+// 아래 에러에 대한 대처 방법에 대한 글 작성
+// Unhandled Runtime Error
+// Error: Hydration failed because the initial UI does not match what was rendered on the server.
+////
+
+function useLocalStorage<T>(
+  key: string,
+  initialState: T
+): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [state, setState] = useState<T>(initialState);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const localStorageState = JSON.parse(
+      window?.localStorage.getItem(key) || "null"
+    );
+    setState(localStorageState || initialState);
+  }, [mounted, key, initialState]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    window?.localStorage.setItem(key, JSON.stringify(state));
+  }, [state, key, mounted]);
+
+  return [mounted ? state : initialState, setState];
+}
+
 const Header = () => {
-  const [isShirinked, setIsShirinked] = useState(false);
+  const [isShirinked, setIsShirinked] = useLocalStorage(
+    "Hadder:isShrinked",
+    false
+  );
 
   const onShrink = () => {
     setIsShirinked(true);
@@ -29,6 +61,13 @@ const Header = () => {
       />
     </>
   );
+
+  // TODO: delete
+  // if (true) {
+  //   const some = JSON.parse("null");
+  //   return <div>{some === null ? "null" : "--"}</div>;
+  // }
+  ////
 
   return isShirinked ? (
     <div className="flex items-center space-x-2 mb-2 m-text-slate">
