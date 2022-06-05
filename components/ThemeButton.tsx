@@ -8,32 +8,28 @@ import Sun from "./icons/Sun";
 import SunFilled from "./icons/SunFilled";
 import System from "./icons/System";
 
-const ModeButton = (props: {
-  theme?: string;
-  systemTheme?: string;
-  onClick: () => void;
-}) => {
+function useThemeMounted() {
+  const { setTheme, themes, ...rest } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const Icon =
-    !mounted || !props.theme
-      ? Sun
-      : props.theme === "system"
-      ? props.systemTheme === "dark"
-        ? Moon
-        : Sun
-      : props.theme === "dark"
-      ? MoonFilled
-      : SunFilled;
-  return <Button Icon={Icon} border circle onClick={props.onClick} />;
-};
+  return !mounted
+    ? {
+        setTheme,
+        themes,
+        forcedTheme: undefined,
+        theme: undefined,
+        resolvedTheme: undefined,
+        systemTheme: undefined,
+      }
+    : { setTheme, themes, ...rest };
+}
 
 export default function ThemeButton() {
-  const { theme, systemTheme, setTheme } = useTheme();
+  const { theme, systemTheme, setTheme } = useThemeMounted();
   const [openMenu, setOpenMenu] = useState(false);
 
   const menuClass = classNames(
@@ -62,13 +58,19 @@ export default function ThemeButton() {
     setOpenMenu(false);
   };
 
+  const Icon = !theme
+    ? Sun
+    : theme === "system"
+    ? systemTheme === "dark"
+      ? Moon
+      : Sun
+    : theme === "dark"
+    ? MoonFilled
+    : SunFilled;
+
   return (
     <div>
-      <ModeButton
-        theme={theme}
-        systemTheme={systemTheme}
-        onClick={onToggleMenu}
-      />
+      <Button Icon={Icon} border circle onClick={onToggleMenu} />
       <div className="relative">
         {openMenu && (
           <div
