@@ -5,7 +5,7 @@ import ErrorMessage from "./ErrorMessage";
 import Check from "./icons/Check";
 import Clock from "./icons/Clock";
 
-type MakeReadableProps = {
+type MakeReadableButtonProps = {
   disabled?: boolean;
   url?: string;
   html?: string;
@@ -43,7 +43,12 @@ const useWebClip = ({ url, html }: { url?: string; html?: string }) => {
   return { data: res.data, error: res.error };
 };
 
-const MakeReadable = ({ disabled, url, html, onFinish }: MakeReadableProps) => {
+const MakeReadableButton = ({
+  disabled,
+  url,
+  html,
+  onFinish,
+}: MakeReadableButtonProps) => {
   const { data, error } = useWebClip({ url, html });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -73,4 +78,4 @@ const MakeReadable = ({ disabled, url, html, onFinish }: MakeReadableProps) => {
   );
 };
 
-export default MakeReadable;
+export default MakeReadableButton;

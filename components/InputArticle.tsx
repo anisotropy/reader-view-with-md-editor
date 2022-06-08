@@ -6,7 +6,7 @@ import Backdrop from "./Backdrop";
 import { useCallback, useEffect, useState } from "react";
 import Dismiss from "./icons/Dismiss";
 import DocOnePage from "./icons/DocOnePage";
-import MakeReadable from "./MakeReadable";
+import MakeReadableButton from "./MakeReadableButton";
 
 type FormInput = {
   source: "url" | "html";
@@ -96,7 +96,7 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
             <textarea {...inputProps("html")} />
           </div>
           <div className="flex space-x-4">
-            <MakeReadable
+            <MakeReadableButton
               url={formData?.url}
               html={formData?.html}
               disabled={!canSubmit}
