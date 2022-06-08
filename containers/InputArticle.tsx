@@ -1,6 +1,6 @@
 import { useForm, useWatch } from "react-hook-form";
 import { useCallback, useEffect, useState } from "react";
-import InputArticlePresener from "components/InputArticle";
+import InputArticlePresener from "components/InputArticlePresenter";
 
 export type FormInput = {
   source: "url" | "html";
