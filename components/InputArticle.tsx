@@ -1,119 +1,96 @@
-import { SubmitHandler, useForm, useWatch } from "react-hook-form";
+import React from "react";
+import { UseFormRegisterReturn } from "react-hook-form";
 import Button from "./Button";
 import Radio from "./Radio";
 import classNames from "classnames";
 import Backdrop from "./Backdrop";
-import { useCallback, useEffect, useState } from "react";
 import Dismiss from "./icons/Dismiss";
 import DocOnePage from "./icons/DocOnePage";
 import MakeReadableButton from "./MakeReadableButton";
+import { FormInput } from "containers/InputArticle";
 
-type FormInput = {
-  source: "url" | "html";
-  url: string;
-  html: string;
-};
-
-type InputArticleProps = {
-  onChangeArticle: (article: { origin: string; readable: string }) => void;
+type InputArticlePresenerProps = {
+  source: FormInput["source"];
+  formData: FormInput | null;
+  isProcessing: boolean;
+  canSubmit: boolean;
+  registerRadio: () => UseFormRegisterReturn;
+  registerInput: (theSource: FormInput["source"]) => UseFormRegisterReturn;
   onClose: () => void;
+  onFinshMakeReadable: (
+    article: { origin: string; readable: string } | null
+  ) => void;
+  onSubmit: React.FormEventHandler<HTMLFormElement>;
 };
 
-const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
-  const [isProcessing, setIsProcessing] = useState(false);
-  const { register, control, handleSubmit, setFocus } = useForm<FormInput>({
-    defaultValues: { source: "url", url: "", html: "" },
-  });
-  const [formData, setFormData] = useState<FormInput | null>(null);
+const InputArticlePresener = React.memo(
+  ({
+    isProcessing,
+    source,
+    formData,
+    canSubmit,
+    registerRadio,
+    registerInput,
+    onFinshMakeReadable,
+    onClose,
+    onSubmit,
+  }: InputArticlePresenerProps) => {
+    const radioProps = (theSource: FormInput["source"]) => ({
+      value: theSource,
+      selectedValue: source,
+      className: "w-8",
+      disabled: isProcessing,
+    });
 
-  const source = useWatch({ control, name: "source" });
-  const url = useWatch({ control, name: "url" });
-  const html = useWatch({ control, name: "html" });
+    const inputProps = (theSource: FormInput["source"]) => ({
+      autoComplete: "off",
+      placeholder: theSource === "url" ? "URL" : "Put HTML code",
+      className: classNames(
+        "flex-1 p-1 border outline-none placeholder:m-text-gray m-bg-white disabled:m-text-gray",
+        theSource === "html" && "resize-none h-36",
+        theSource === source
+          ? "m-border-slate m-text-black"
+          : "border-transparent"
+      ),
+    });
 
-  const canSubmit = Boolean(
-    (source === "html" && html) || (source === "url" && url)
-  );
+    return (
+      <Backdrop>
+        <div className="w-full p-4 max-w-2xl m-bg-white m-text-slate rounded-md">
+          <h1 className="flex text-lg items-center space-x-1">
+            <DocOnePage className="w-6 fill-current" /> <span>Webpage</span>
+          </h1>
+          <form onSubmit={onSubmit} className="mt-4 w-full space-y-4 text-sm">
+            <div className="flex group">
+              <Radio {...registerRadio()} {...radioProps("url")} />
+              <input {...registerInput("url")} {...inputProps("url")} />
+            </div>
+            <div className="flex">
+              <Radio {...registerRadio()} {...radioProps("html")} />
+              <textarea {...registerInput("html")} {...inputProps("html")} />
+            </div>
+            <div className="flex space-x-4">
+              <MakeReadableButton
+                url={formData?.url}
+                html={formData?.html}
+                disabled={!canSubmit}
+                onFinish={onFinshMakeReadable}
+              />
+              <Button
+                border
+                Icon={Dismiss}
+                text="Cancel"
+                onClick={onClose}
+                disabled={isProcessing}
+              />
+            </div>
+          </form>
+        </div>
+      </Backdrop>
+    );
+  }
+);
 
-  const onSubmit: SubmitHandler<FormInput> = async (data) => {
-    if (!canSubmit) return;
-    setFormData(data);
-    setIsProcessing(true);
-  };
+InputArticlePresener.displayName = "InputArticlePresenter";
 
-  const onFinshMakeReadable = useCallback(
-    (article: { origin: string; readable: string } | null) => {
-      if (article) {
-        onChangeArticle(article);
-      } else {
-        setFormData(null);
-        setIsProcessing(false);
-      }
-    },
-    [onChangeArticle]
-  );
-
-  useEffect(() => {
-    setFocus(source);
-  }, [setFocus, source]);
-
-  const radioProps = (theSource: "url" | "html") => ({
-    ...register("source"),
-    value: theSource,
-    selectedValue: source,
-    className: "w-8",
-    disabled: isProcessing,
-  });
-
-  const inputProps = (theSource: "url" | "html") => ({
-    ...register(theSource, { disabled: theSource !== source || isProcessing }),
-    autoComplete: "off",
-    placeholder: theSource === "url" ? "URL" : "Put HTML code",
-    className: classNames(
-      "flex-1 p-1 border outline-none placeholder:m-text-gray m-bg-white disabled:m-text-gray",
-      theSource === "html" && "resize-none h-36",
-      theSource === source
-        ? "m-border-slate m-text-black"
-        : "border-transparent"
-    ),
-  });
-
-  return (
-    <Backdrop>
-      <div className="w-full p-4 max-w-2xl m-bg-white m-text-slate rounded-md">
-        <h1 className="flex text-lg items-center space-x-1">
-          <DocOnePage className="w-6 fill-current" /> <span>Webpage</span>
-        </h1>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="mt-4 w-full space-y-4 text-sm"
-        >
-          <div className="flex group">
-            <Radio {...radioProps("url")} />
-            <input {...inputProps("url")} />
-          </div>
-          <div className="flex">
-            <Radio {...radioProps("html")} />
-            <textarea {...inputProps("html")} />
-          </div>
-          <div className="flex space-x-4">
-            <MakeReadableButton
-              url={formData?.url}
-              html={formData?.html}
-              disabled={!canSubmit}
-              onFinish={onFinshMakeReadable}
-            />
-            <Button
-              border
-              Icon={Dismiss}
-              text="Cancel"
-              onClick={onClose}
-              disabled={isProcessing}
-            />
-          </div>
-        </form>
-      </div>
-    </Backdrop>
-  );
-};
-
-export default InputArticle;
+export default InputArticlePresener;

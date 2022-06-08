@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Body from "./Body";
 import Header from "./Header";
 import FullScreenViewer from "./FullScreenViewer";
-import InputArticle from "./InputArticle";
+import InputArticle from "containers/InputArticle";
 
 const introduction = {
   origin: `# Reader Mode View with Markdown Editor\n\n[GitHub](https://github.com/anisotropy/reader-view-with-md-editor)\n\nGet rid of annoying ads or pop-ups on a webpage and read it on **reader mode** like [Reader View Chrome extension](https://chrome.google.com/webstore/detail/reader-view/ecabifbgmdmgdllomnfinbmaellmclnh). But you can **compare** the reader mode version and the original one, and edit it in **markdown** format, if you think too many things are removed.\n\n1. Click **Webpage** button and put a webpage address or HTML code.\n1. Click a line in **Markdown Editor**, and add, remove or edit the line.`,
