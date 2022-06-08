@@ -1,5 +1,5 @@
 import React from "react";
-import { UseFormRegisterReturn } from "react-hook-form";
+import { UseFormRegister } from "react-hook-form";
 import Button from "./Button";
 import Radio from "./Radio";
 import classNames from "classnames";
@@ -14,8 +14,7 @@ type InputArticlePresenerProps = {
   formData: FormInput | null;
   isProcessing: boolean;
   canSubmit: boolean;
-  registerRadio: () => UseFormRegisterReturn;
-  registerInput: (theSource: FormInput["source"]) => UseFormRegisterReturn;
+  register: UseFormRegister<FormInput>;
   onClose: () => void;
   onFinshMakeReadable: (
     article: { origin: string; readable: string } | null
@@ -29,8 +28,7 @@ const InputArticlePresener = React.memo(
     source,
     formData,
     canSubmit,
-    registerRadio,
-    registerInput,
+    register,
     onFinshMakeReadable,
     onClose,
     onSubmit,
@@ -62,12 +60,12 @@ const InputArticlePresener = React.memo(
           </h1>
           <form onSubmit={onSubmit} className="mt-4 w-full space-y-4 text-sm">
             <div className="flex group">
-              <Radio {...registerRadio()} {...radioProps("url")} />
-              <input {...registerInput("url")} {...inputProps("url")} />
+              <Radio {...register("source")} {...radioProps("url")} />
+              <input {...register("url")} {...inputProps("url")} />
             </div>
             <div className="flex">
-              <Radio {...registerRadio()} {...radioProps("html")} />
-              <textarea {...registerInput("html")} {...inputProps("html")} />
+              <Radio {...register("source")} {...radioProps("html")} />
+              <textarea {...register("html")} {...inputProps("html")} />
             </div>
             <div className="flex space-x-4">
               <MakeReadableButton

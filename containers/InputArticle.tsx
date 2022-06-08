@@ -50,10 +50,11 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
     setFocus(source);
   }, [setFocus, source]);
 
-  const registerRadio = () => register("source");
-
-  const registerInput = (theSource: "url" | "html") =>
-    register(theSource, { disabled: theSource !== source || isProcessing });
+  const registerForm = (key: keyof FormInput) => {
+    return key === "url" || key === "html"
+      ? register(key, { disabled: key !== source || isProcessing })
+      : register("source");
+  };
 
   return (
     <InputArticlePresener
@@ -62,8 +63,7 @@ const InputArticle = ({ onChangeArticle, onClose }: InputArticleProps) => {
         source,
         formData,
         canSubmit,
-        registerRadio,
-        registerInput,
+        register: registerForm,
         onFinshMakeReadable,
         onClose,
         onSubmit,
