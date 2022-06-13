@@ -7,7 +7,7 @@ Get rid of annoying ads or pop-ups on a webpage and read it on **reader mode** l
 
 ## Website
 
-website
+https://reader-view-with-md-editor.vercel.app/
 
 ## License
 
