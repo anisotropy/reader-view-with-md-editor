@@ -5,12 +5,6 @@ import Maximize from "./icons/Maximize";
 import Minimize from "./icons/Minimize";
 import ThemeButton from "./ThemeButton";
 
-// TODO:
-// 아래 에러에 대한 대처 방법에 대한 글 작성
-// Unhandled Runtime Error
-// Error: Hydration failed because the initial UI does not match what was rendered on the server.
-////
-
 function useLocalStorage<T>(
   key: string,
   initialState: T
@@ -62,18 +56,13 @@ const Header = () => {
     </>
   );
 
-  // TODO: delete
-  // if (true) {
-  //   const some = JSON.parse("null");
-  //   return <div>{some === null ? "null" : "--"}</div>;
-  // }
-  ////
-
   return isShirinked ? (
     <div className="flex items-center space-x-2 mb-2 m-text-slate">
       <h1>{title}</h1>
-      <Button Icon={Maximize} border circle onClick={onExpand} />
-      {otherButtons}
+      <div className="flex space-x-2">
+        <Button Icon={Maximize} border circle onClick={onExpand} />
+        {otherButtons}
+      </div>
     </div>
   ) : (
     <div className="max-w-xl mb-2 m-text-slate">
