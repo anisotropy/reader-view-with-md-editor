@@ -1,4 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import Button from "./Button";
 import GitHub from "./icons/GitHub";
 import Maximize from "./icons/Maximize";
@@ -8,24 +13,28 @@ import ThemeButton from "./ThemeButton";
 function useLocalStorage<T>(
   key: string,
   initialState: T
-): [T, React.Dispatch<React.SetStateAction<T>>] {
+): [T, (state: T) => void] {
   const [state, setState] = useState<T>(initialState);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    const localStorageState = JSON.parse(
-      window?.localStorage.getItem(key) || "null"
+  const setLocalStorage = useCallback(
+    (newState: T) => {
+      window?.localStorage.setItem(key, JSON.stringify(newState));
+      setState(newState);
+    },
+    [key]
+  );
+
+  const useIsoLayoutEffect =
+    typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+  useIsoLayoutEffect(() => {
+    const localStorageState: T = JSON.parse(
+      window.localStorage.getItem(key) ?? JSON.stringify(initialState)
     );
-    setState(localStorageState || initialState);
-  }, [mounted, key, initialState]);
+    setState(localStorageState);
+  }, [key, initialState]);
 
-  useEffect(() => {
-    if (!mounted) return;
-    window?.localStorage.setItem(key, JSON.stringify(state));
-  }, [state, key, mounted]);
-
-  return [mounted ? state : initialState, setState];
+  return [state, setLocalStorage];
 }
 
 const Header = () => {
