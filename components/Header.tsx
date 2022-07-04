@@ -1,41 +1,9 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
+import useLocalStorage from "hooks/useLocalStorage";
 import Button from "./Button";
 import GitHub from "./icons/GitHub";
 import Maximize from "./icons/Maximize";
 import Minimize from "./icons/Minimize";
 import ThemeButton from "./ThemeButton";
-
-function useLocalStorage<T>(
-  key: string,
-  initialState: T
-): [T, (state: T) => void] {
-  const [state, setState] = useState<T>(initialState);
-
-  const setLocalStorage = useCallback(
-    (newState: T) => {
-      window?.localStorage.setItem(key, JSON.stringify(newState));
-      setState(newState);
-    },
-    [key]
-  );
-
-  const useIsoLayoutEffect =
-    typeof window !== "undefined" ? useLayoutEffect : useEffect;
-
-  useIsoLayoutEffect(() => {
-    const localStorageState: T = JSON.parse(
-      window.localStorage.getItem(key) ?? JSON.stringify(initialState)
-    );
-    setState(localStorageState);
-  }, [key, initialState]);
-
-  return [state, setLocalStorage];
-}
 
 const Header = () => {
   const [isShirinked, setIsShirinked] = useLocalStorage(
