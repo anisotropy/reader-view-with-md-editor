@@ -1,6 +1,5 @@
-import React, { useRef, useState, useMemo, useCallback } from "react";
+import React, { useRef, useState, useCallback, startTransition } from "react";
 import classNames from "classnames";
-import { throttle } from "lodash";
 
 type ScrollSyncProps = {
   viewer: React.ReactNode;
@@ -57,17 +56,14 @@ const ScrollSync = ({
     [editorLineEls]
   );
 
-  const setThrottledEditorScrollTop = useMemo(
-    () => throttle(setEditorScrollTop, 100),
-    [setEditorScrollTop]
-  );
-
   const onViewerScroll = useCallback(
     (event: React.UIEvent<HTMLDivElement>) => {
       if (scrollSide !== "viewer") return;
-      setThrottledEditorScrollTop(event.currentTarget.scrollTop);
+      startTransition(() => {
+        setEditorScrollTop(event.currentTarget.scrollTop);
+      });
     },
-    [scrollSide, setThrottledEditorScrollTop]
+    [scrollSide, setEditorScrollTop]
   );
 
   const setViewerScrollTop = useCallback(
@@ -105,17 +101,14 @@ const ScrollSync = ({
     [editorLineEls]
   );
 
-  const setThrottledViewerScrollTop = useMemo(
-    () => throttle(setViewerScrollTop, 100),
-    [setViewerScrollTop]
-  );
-
   const onEditorScroll = useCallback(
     (event: React.UIEvent<HTMLDivElement>) => {
       if (scrollSide !== "editor") return;
-      setThrottledViewerScrollTop(event.currentTarget.scrollTop);
+      startTransition(() => {
+        setViewerScrollTop(event.currentTarget.scrollTop);
+      });
     },
-    [scrollSide, setThrottledViewerScrollTop]
+    [scrollSide, setViewerScrollTop]
   );
 
   const onViwerMouseMove = () => {
